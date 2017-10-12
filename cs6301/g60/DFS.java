@@ -43,6 +43,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 	
 	//Reinitialize the graph so that it could be used for dfs again
 	void reinitialize(){
+		cno = 0;
 		for(Graph.Vertex u: g){
 			DFSVertex du = getVertex(u);
 			du.seen = false;
