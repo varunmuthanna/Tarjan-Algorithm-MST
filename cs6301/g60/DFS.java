@@ -13,6 +13,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 	
 	int time = 0;
 	List<Graph.Vertex> decFinList;
+	int cno = 0;
 	
 	//Class to store information about DFS on vertex
 	static class DFSVertex {
@@ -56,13 +57,12 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 	 * DFS on given directed graph
 	 */	
 	public void dfs(Iterator<Graph.Vertex> it){
-		int cno = 0;
 		decFinList = new LinkedList<>();
 		while(it.hasNext()){
 			Graph.Vertex u = it.next();
 			if(!seen(u)){
 				cno++;
-				DFSVisit(u,cno);
+				DFSVisit(u);
 			}
 		}	
 	}
@@ -72,7 +72,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 	 * names its component with corresponding component number, also
 	 * it marks the nodes visited as seen
 	 */
-	void DFSVisit(Graph.Vertex u, int cno){
+	void DFSVisit(Graph.Vertex u){
 		time = time + 1;
 		DFSVertex du = getVertex(u);
 		du.discover = time;
@@ -82,7 +82,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 			Graph.Vertex v = e.otherEnd(u);
 			if(!seen(v)){
 				getVertex(v).parent = u;
-				DFSVisit(v, cno);
+				DFSVisit(v);
 			}
 		}
 		time = time + 1;
@@ -135,6 +135,10 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 	//Check if the node is visited or not
 	public boolean seen(Graph.Vertex u) {
 		return getVertex(u).seen;
+	}
+	
+	public DFS.DFSVertex getDFSVertex(Graph.Vertex u){
+		return getVertex(u);
 	}
 	
 }
