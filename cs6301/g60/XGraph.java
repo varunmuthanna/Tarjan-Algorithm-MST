@@ -18,11 +18,11 @@ import cs6301.g60.Graph.Edge;
 import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Scanner;
 
 
 
 public class XGraph extends Graph {
+
     public static class XVertex extends Vertex {
         boolean disabled;
         List<XEdge> xadj;
@@ -157,64 +157,4 @@ public class XGraph extends Graph {
         u.disable();
     }
 
-    /*public static void main(String[] args) {
-        Graph g = Graph.readGraph(new Scanner(System.in));
-        XGraph xg = new XGraph(g);
-        Vertex src = xg.getVertex(1);
-
-        System.out.println("Node : Dist : Edges");
-        BFS b = new BFS(xg, src);
-        b.bfs();
-        Vertex farthest = DiameterTree.findFarthest(b);
-        xg.printGraph(b);
-        System.out.println("Source: " + src + " Farthest: " + farthest + " Distance: " + b.distance(farthest));
-
-        System.out.println("\nDisabling vertices 8 and 9");
-        xg.disable(8);
-        xg.disable(9);
-        b.reinitialize(src);
-        b.bfs();
-        farthest = DiameterTree.findFarthest(b);
-        xg.printGraph(b);
-        System.out.println("Source: " + src + " Farthest: " + farthest + " Distance: " + b.distance(farthest));
-    }
-
-    void printGraph(BFS b) {
-        for(Vertex u: this) {
-            System.out.print("  " + u + "  :   " + b.distance(u) + "  : ");
-            for(Edge e: u) {
-                System.out.print(e);
-            }
-            System.out.println();
-        }
-
-    }*/
-
 }
-
-/*
-Sample output:
-
-Node : Dist : Edges
-  1  :   0  : (1,2)(1,3)
-  2  :   1  : (2,1)(2,4)(2,5)
-  3  :   1  : (3,1)(3,6)(3,7)
-  4  :   2  : (4,2)(4,8)
-  5  :   2  : (5,2)
-  6  :   2  : (6,3)
-  7  :   2  : (7,3)(7,9)
-  8  :   3  : (8,4)
-  9  :   3  : (9,7)
-Source: 1 Farthest: 8 Distance: 3
-
-Disabling vertices 8 and 9
-  1  :   0  : (1,2)(1,3)
-  2  :   1  : (2,1)(2,4)(2,5)
-  3  :   1  : (3,1)(3,6)(3,7)
-  4  :   2  : (4,2)
-  5  :   2  : (5,2)
-  6  :   2  : (6,3)
-  7  :   2  : (7,3)
-Source: 1 Farthest: 4 Distance: 2
-
-*/

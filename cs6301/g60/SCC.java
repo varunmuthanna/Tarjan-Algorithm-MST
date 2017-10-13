@@ -17,7 +17,7 @@ public class SCC {
 		//Run DFS and check if it is connected
 		d.dfs(g.iterator());
 		d.reinitialize();
-		//Reverse the graph by transposing and run DFS, If it is
+		// Reverse the graph by transposing and run DFS, If it is
 		// still connected then the graph is strongly connected
 		d.transposeGraph();
 		d.dfs(d.getDecFinishList().iterator());

@@ -125,34 +125,3 @@ public class BFSHash extends GraphHash<BFSVertex,Boolean> {
         bh.runAndPrint(g.getVertex(3));
     }
 }
-
-/*
-Sample run:
-
-Input:
-
-5 6
-1 2 1
-1 3 1
-2 4 1
-3 5 1
-5 2 1
-4 1 1
-
-Output:
-
-BFS with vertex 1 as root:
-1 : 0
-2 : 1
-3 : 1
-4 : 2
-5 : 2
-
-BFS with vertex 3 as root:
-1 : 4
-2 : 2
-3 : 0
-4 : 3
-5 : 1
-
-*/
