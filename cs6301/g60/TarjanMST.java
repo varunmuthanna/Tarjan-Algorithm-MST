@@ -91,10 +91,11 @@ public class TarjanMST {
         Graph g = Graph.readDirectedGraph(in);
         Graph.Vertex startVertex = g.getVertex(start);
         
-        TarjanMST tMST = new TarjanMST(g,startVertex);
+        XGraph xg = new XGraph(g);
+        TarjanMST tMST = new TarjanMST(xg,xg.getVertex(startVertex));
         System.out.println("Original Graph");
         SCC scc = new SCC();
-        scc.getAllScc(tMST.xg, startVertex);
+        scc.getAllScc(tMST.xGraph, xg.getVertex(startVertex));
         int ind = 0;
         for(List<Graph.Vertex> l : scc.list){
         	System.out.println("component " + ind + " are");
@@ -106,11 +107,11 @@ public class TarjanMST {
         }
         
         tMST.reduceEdgeWeights();
-        tMST.xg.makeZeroGraph();
+        tMST.xGraph.makeZeroGraph();
         
         System.out.println("Zero Graph");
         scc = new SCC();
-        scc.getAllScc(tMST.xg, startVertex);
+        scc.getAllScc(tMST.xGraph, xg.getVertex(startVertex));
         ind = 0;
         for(List<Graph.Vertex> l : scc.list){
         	System.out.println("component " + ind + " are");

@@ -42,9 +42,9 @@ public class XGraph extends Graph {
         @Override
         public Iterator<Edge> iterator() {
         	if(zeroGraph){
-        		return new XVertexIterator(this); 
+        		return new XZeroEdgeIterator(this); 
         	}else{
-        		return new XZeroEdgeIterator(this);
+        		return new XVertexIterator(this);
         	}
         }
 

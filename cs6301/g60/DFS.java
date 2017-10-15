@@ -68,6 +68,20 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 		}	
 	}
 	
+	public void dfs(Graph.Vertex u){
+		decFinList = new LinkedList<>();
+		cno++;
+		DFSVisit(u);
+		Iterator<Graph.Vertex> it = g.iterator();
+		while(it.hasNext()){
+			Graph.Vertex v = it.next();
+			if(!seen(v)){
+				cno++;
+				DFSVisit(v);
+			}
+		}
+	}
+	
 	/*
 	 * This will visit all the nodes in the single component and 
 	 * names its component with corresponding component number, also
@@ -79,7 +93,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 		du.discover = time;
 		du.seen = true;
 		du.cno = cno;
-		for(Graph.Edge e: u.adj) {
+		for(Graph.Edge e: u) {
 			Graph.Vertex v = e.otherEnd(u);
 			if(!seen(v)){
 				getVertex(v).parent = u;

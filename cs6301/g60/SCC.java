@@ -15,7 +15,7 @@ public class SCC {
 	public void getAllScc(Graph g, Graph.Vertex startVertex){
 		DFS d = new DFS(g);
 		//Run DFS and check if it is connected
-		d.dfs(g.iterator());
+		d.dfs(startVertex);
 		d.reinitialize();
 		// Reverse the graph by transposing and run DFS, If it is
 		// still connected then the graph is strongly connected
