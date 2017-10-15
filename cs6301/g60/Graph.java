@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Graph implements Iterable<Graph.Vertex> {
-	Vertex[] v, vertex; // vertices of graph
+	Vertex[] vertex; // vertices of graph
 	int n; // number of verices in the graph
 	int m; // number of edges in the graph
 	boolean directed;  // true if graph is directed, false otherwise
@@ -225,7 +225,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 		this.n = n;
 		m = 0;
 		vertex = new Vertex[n];
-		v = vertex;   // for backward compatibility
+		//v = vertex;   // for backward compatibility
 		directed = false;  // default is undirected graph
 		// create an array of Vertex objects
 		for (int i = 0; i < n; i++)
@@ -237,7 +237,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 		n = g.n;
 		m = g.m;
 		vertex = g.vertex;
-		v = vertex;
+		//v = vertex;
 		directed = g.directed;
 	}
 
@@ -246,7 +246,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 		n = g.n;
 		m = g.m;
 		vertex = arr;
-		v = vertex;
+		//v = vertex;
 		directed = g.directed;
 	}
 

@@ -24,21 +24,28 @@ public class TarjanMST {
     }
 
     protected void reduceEdgeWeights(){
-
+        XGraph.getRevAdj = true;
         for(Graph.Vertex vertex: xGraph){
             if(vertex!= start) {
                 vertex = xGraph.getVertex(vertex);
-                Graph.Edge min = vertex.revAdj.get(0);
-                for (Graph.Edge edge : vertex.revAdj) {
-                    if (edge.getWeight()<min.getWeight()){
+                Graph.Edge min = null;
+
+                for (Graph.Edge edge : vertex) {
+                    if (min == null){
+                        min = edge;
+                    }
+                    if (edge.getWeight()>0 && edge.getWeight()<min.getWeight()){
                         min = edge;
                     }
                 }
-                 for (Graph.Edge edge : vertex.revAdj) {
-                    edge.setWeight(edge.getWeight() - min.getWeight());
+                if(min!=null) {
+                    for (Graph.Edge edge : vertex) {
+                        edge.setWeight(edge.getWeight() - min.getWeight());
+                    }
                 }
             }
         }
+        XGraph.getRevAdj = false;
     }
 
     protected void shrinkGraph(){

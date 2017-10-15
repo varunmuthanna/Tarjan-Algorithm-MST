@@ -59,9 +59,17 @@ public class LP3 {
         /**
          * TODO: check if the all the nodes are reachable from the start node using BFS on object of Graph g
          */
+        XGraph xgraph = new XGraph(g);
+        TarjanMST tarjanMST = new TarjanMST(xgraph, xgraph.getVertex(start));
+        System.out.println(xgraph);
+        tarjanMST.reduceEdgeWeights();
+        System.out.println(xgraph);
+        tarjanMST.reduceEdgeWeights();
+        System.out.println(xgraph);
 
-        List<Edge> path = directedMSTHelper(g, start, dmst, new HashMap<>());
-        return path.size();
+        return 0;
+/*        List<Edge> path = directedMSTHelper(g, start, dmst, new HashMap<>());
+        return path.size();*/
     }
 
     private static List<Edge> directedMSTHelper(Graph g, Vertex start, List<Edge> dmst, Map<Vertex, List<Vertex>> map){
