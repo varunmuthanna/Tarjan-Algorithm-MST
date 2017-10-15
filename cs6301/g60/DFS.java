@@ -134,11 +134,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 	 * to the reverse adjacency list and vice versa 
 	 */
 	public void transposeGraph(){
-		for(Graph.Vertex u: g) {
-			List<Graph.Edge> temp = u.adj;
-			u.adj = u.revAdj;
-			u.revAdj = temp;
-		}
+		g.reverseGraph();
 	}
 	
 	//Changing vertex attribute values after DFS on a vertex

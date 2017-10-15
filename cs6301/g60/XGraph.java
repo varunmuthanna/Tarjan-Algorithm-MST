@@ -15,6 +15,10 @@ package cs6301.g60;
 
 import java.util.Iterator;
 import java.util.List;
+
+import cs6301.g60.Graph.Edge;
+import cs6301.g60.Graph.Vertex;
+
 import java.util.LinkedList;
 
 
@@ -102,7 +106,7 @@ public class XGraph extends Graph {
                 if(ready) { return true; }
                 if(!it.hasNext()) { return false; }
                 cur = it.next();
-                while(cur.isDisabled() && it.hasNext() && cur.weight != 0) {
+                while((cur.isDisabled() || cur.weight != 0 )&& it.hasNext()) {
                     cur = it.next();
                 }
                 ready = true;
@@ -206,6 +210,20 @@ public class XGraph extends Graph {
         XVertex u = (XVertex) getVertex(i);
         u.disable();
     }
+    
+    /** Method to reverse the edges of a graph.  Applicable to directed graphs only. */
+    @Override
+	public void reverseGraph() {
+		if(directed) {
+			Iterator<Graph.Vertex> it = this.iterator();
+			while(it.hasNext()) {
+				XVertex u = (XVertex)it.next();
+				List<XEdge> tmp = u.xadj;
+				u.xadj = u.xrevadj;
+				u.xrevadj = tmp;
+			}
+		}
+	}
     
     public void makeZeroGraph(){
     	zeroGraph = true;
