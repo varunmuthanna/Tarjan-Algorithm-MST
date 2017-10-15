@@ -165,6 +165,28 @@ public class XGraph extends Graph {
             }
         }
     }
+    
+    public void addVertex(Vertex u){
+    	xv[u.getName()] = new XVertex(u);
+    	for(Edge e: u) {
+            Vertex v = e.otherEnd(u);
+            XVertex x1 = getVertex(u);
+            XVertex x2 = getVertex(v);
+            XEdge newEdge = new XEdge(x1, x2, e.weight, e.name);
+            x1.xadj.add(newEdge);
+            x2.xrevadj.add(newEdge);
+        }
+    	
+    	for(Iterator<Edge> it = u.reverseIterator(); it.hasNext(); ){
+    		Edge e = it.next();
+    		Vertex v = e.otherEnd(u);
+            XVertex x1 = getVertex(u);
+            XVertex x2 = getVertex(v);
+            XEdge newEdge = new XEdge(x2, x1, e.weight, e.name);
+            x1.xrevadj.add(newEdge);
+            x2.xadj.add(newEdge);   		
+    	}
+    }
 
     @Override
     public Iterator<Vertex> iterator() { return new XGraphIterator(this); }
@@ -231,14 +253,14 @@ public class XGraph extends Graph {
 
     public String toString() {
         StringBuilder result = new StringBuilder();
-        XGraph.getRevAdj = true;
+        //XGraph.getRevAdj = false;
         for (Graph.Vertex vertex : this){
             for(Graph.Edge edge : vertex ){
                 result.append(edge.toString()+" "+edge.weight+" ");
             }
             result.append("\n");
         }
-        XGraph.getRevAdj = false;
+        //XGraph.getRevAdj = false;
         return result.toString();
     }
 

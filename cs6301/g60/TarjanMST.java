@@ -50,27 +50,26 @@ public class TarjanMST {
 
     protected void shrinkGraph(){
         SCC scc = new SCC();
+        XGraph.zeroGraph = true;
         scc.getAllScc(xGraph, start);
         List<List<Graph.Vertex>> components = scc.list;
+        XGraph.zeroGraph = false;
 
         for(List<Graph.Vertex> component : components){
-            Graph.Vertex orginalVertex = null;
+            Graph.Vertex newVertex = null;
             if(component.size()>1){
-                List<Graph.Edge> newEdgeList = findIncomingOutgoingEdges(component);
-                for(Graph.Edge edges : newEdgeList){
-                    // determine whether it's an outgoing or incoming edge.
-                }
+                newVertex = addIncomingOutgoingEdges(component);
+                xGraph.addVertex(newVertex);
 
                 //disabling node edges should be the last thing
                 disableNodes(component);
-                orginalVertex = xGraph.addVertex();
+                
             }else{
                 //component has only 1 vertex in it
-                orginalVertex = component.get(0);
+            	newVertex = component.get(0);
             }
-            map.put(orginalVertex, component);
+            map.put(newVertex, component);
         }
-
     }
 
     //TODO: Implement expand graph
@@ -100,8 +99,32 @@ public class TarjanMST {
     }
 
     //TODO: Implement enableNodes -- check if it should be a list of egdes or xedges
-    protected List<Graph.Edge> findIncomingOutgoingEdges(List<Graph.Vertex> vertices){
-         return null;
+    protected Graph.Vertex addIncomingOutgoingEdges(List<Graph.Vertex> vertices){
+    	Graph.Vertex newVertex = xGraph.addVertex();
+    	HashMap<Graph.Vertex, Boolean> hash = new HashMap<>();
+    	for(Graph.Vertex u : vertices){
+    		hash.put(u, true);
+    	}
+    	
+    	for(Graph.Vertex u : vertices){
+    		for(Graph.Edge e : u){
+    			Graph.Vertex v = e.otherEnd(u);
+    			if(hash.containsKey(v)){
+    				continue;
+    			}
+    			xGraph.addEdge(newVertex, v, e.weight, xGraph.edgeSize());
+    		}
+    		XGraph.getRevAdj = true;
+    		for(Graph.Edge e : u){
+    			Graph.Vertex v = e.otherEnd(u);
+    			if(hash.containsKey(v)){
+    				continue;
+    			}
+    			xGraph.addEdge(v, newVertex, e.weight, xGraph.edgeSize());
+    		}
+    		XGraph.getRevAdj = false;
+    	}
+    	return newVertex;
     }
     
     
@@ -136,22 +159,26 @@ public class TarjanMST {
         	System.out.println();
         	ind++;
         }
+        System.out.println(tMST.xGraph);
         
         tMST.reduceEdgeWeights();
-        tMST.xGraph.makeZeroGraph();
+        //tMST.xGraph.makeZeroGraph();
         
-        System.out.println("Zero Graph");
-        scc = new SCC();
-        scc.getAllScc(tMST.xGraph, xg.getVertex(startVertex));
-        ind = 0;
-        for(List<Graph.Vertex> l : scc.list){
-        	System.out.println("component " + ind + " are");
-        	for(Graph.Vertex v: l){
-        		System.out.print(v.toString() + ",");
-        	}
-        	System.out.println();
-        	ind++;
-        }
+//        System.out.println("Zero Graph");
+//        scc = new SCC();
+//        scc.getAllScc(tMST.xGraph, xg.getVertex(startVertex));
+//        ind = 0;
+//        for(List<Graph.Vertex> l : scc.list){
+//        	System.out.println("component " + ind + " are");
+//        	for(Graph.Vertex v: l){
+//        		System.out.print(v.toString() + ",");
+//        	}
+//        	System.out.println();
+//        	ind++;
+//        }
+        tMST.shrinkGraph();
+        System.out.println("new graph");
+        System.out.println(tMST.xGraph);
     }
 
 }
