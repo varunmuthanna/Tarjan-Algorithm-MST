@@ -12,8 +12,6 @@
  **/
 
 package cs6301.g60;
-import cs6301.g60.Graph.Vertex;
-import cs6301.g60.Graph.Edge;
 
 import java.util.Iterator;
 import java.util.List;
@@ -23,16 +21,18 @@ import java.util.LinkedList;
 
 public class XGraph extends Graph {
 	
-	static boolean zeroGraph = false;
+    static boolean zeroGraph = false;
+    static boolean getRevAdj = false;
 
     public static class XVertex extends Vertex {
         boolean disabled;
-        List<XEdge> xadj;
+        List<XEdge> xadj, xrevadj;
 
         XVertex(Vertex u) {
             super(u);
             disabled = false;
             xadj = new LinkedList<>();
+            xrevadj = new LinkedList<>();
         }
 
         boolean isDisabled() { return disabled; }
@@ -54,7 +54,11 @@ public class XGraph extends Graph {
             boolean ready;
 
             XVertexIterator(XVertex u) {
-                this.it = u.xadj.iterator();
+                if(!getRevAdj)
+                    this.it = u.xadj.iterator();
+                else
+                    this.it = u.xrevadj.iterator();
+
                 ready = false;
             }
 
@@ -151,7 +155,9 @@ public class XGraph extends Graph {
                 Vertex v = e.otherEnd(u);
                 XVertex x1 = getVertex(u);
                 XVertex x2 = getVertex(v);
-                x1.xadj.add(new XEdge(x1, x2, e.weight, e.name));
+                XEdge newEdge = new XEdge(x1, x2, e.weight, e.name);
+                x1.xadj.add(newEdge);
+                x2.xrevadj.add(newEdge);
             }
         }
     }
@@ -207,12 +213,14 @@ public class XGraph extends Graph {
 
     public String toString() {
         StringBuilder result = new StringBuilder();
+        XGraph.getRevAdj = true;
         for (Graph.Vertex vertex : this){
-            for(Graph.Edge edge : vertex.revAdj ){
+            for(Graph.Edge edge : vertex ){
                 result.append(edge.toString()+" "+edge.weight+" ");
             }
             result.append("\n");
         }
+        XGraph.getRevAdj = false;
         return result.toString();
     }
 
