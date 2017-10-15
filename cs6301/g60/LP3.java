@@ -66,15 +66,19 @@ public class LP3 {
         TarjanMST tarjanMST = new TarjanMST(xgraph, xgraph.getVertex(start));
 
         List<Graph.Vertex> l = new ArrayList<>();
-        for(Graph.Vertex vertex: tarjanMST.xGraph) {
+        for(Graph.Vertex vertex: xgraph) {
             l.add(vertex);
         }
-        System.out.println(xgraph);
-        tarjanMST.reduceEdgeWeights();
-        tarjanMST.disableNodesEdges(l);
-        tarjanMST.enableNodesEdges(l);
 
-        System.out.println(xgraph);
+        BFSHash bh = new BFSHash(xgraph);
+        bh.runAndPrint(start);
+
+        //tarjanMST.reduceEdgeWeights();
+        tarjanMST.disableNodesEdges(l);
+        //tarjanMST.enableNodesEdges(l);
+
+        bh.runAndPrint(start);
+
         return 0;
     }
 }
