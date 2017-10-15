@@ -104,6 +104,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 		public String toString() {
 			return Integer.toString(name+1);
 		}
+
 	}
 
 	/**
@@ -275,6 +276,10 @@ public class Graph implements Iterable<Graph.Vertex> {
 		}
 		m++;  // Increment edge count
 		return e;
+	}
+
+	public Vertex addVertex(){
+		return new Vertex(++n);
 	}
 
 	/** Number of vertices in graph */

@@ -116,12 +116,12 @@ public class BFSHash extends GraphHash<BFSVertex,Boolean> {
     public static void main(String[] args) {
         Graph g = Graph.readDirectedGraph(new Scanner(System.in));
 
-        System.out.println("BFS with vertex 1 as root:");
+        System.out.println("BFS with vertex 1 as start:");
         BFSHash bh = new BFSHash(g);
         bh.runAndPrint(g.getVertex(1));
 
         bh.reinitialize();
-        System.out.println("\nBFS with vertex 3 as root:");
+        System.out.println("\nBFS with vertex 3 as start:");
         bh.runAndPrint(g.getVertex(3));
     }
 }

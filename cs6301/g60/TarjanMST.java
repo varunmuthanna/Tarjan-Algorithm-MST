@@ -2,6 +2,7 @@ package cs6301.g60;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -11,17 +12,21 @@ import java.util.Scanner;
 public class TarjanMST {
 
     XGraph xGraph;
-    Graph.Vertex root;
+    Graph.Vertex start;
+
+    //map used to map new Vertex to a list of vertices in a particular component
+    HashMap<Graph.Vertex, List<Graph.Vertex>> map;
 
     public TarjanMST(XGraph xGraph, Graph.Vertex root){
         this.xGraph = xGraph;
-        this.root = root;
+        this.start = root;
+        map = new HashMap<>();
     }
 
     protected void reduceEdgeWeights(){
 
         for(Graph.Vertex vertex: xGraph){
-            if(vertex!=root) {
+            if(vertex!= start) {
                 vertex = xGraph.getVertex(vertex);
                 Graph.Edge min = vertex.revAdj.get(0);
                 for (Graph.Edge edge : vertex.revAdj) {
@@ -36,9 +41,28 @@ public class TarjanMST {
         }
     }
 
-
-    //TODO: Implement shrink graph
     protected void shrinkGraph(){
+        SCC scc = new SCC();
+        scc.getAllScc(xGraph, start);
+        List<List<Graph.Vertex>> components = scc.list;
+
+        for(List<Graph.Vertex> component : components){
+            Graph.Vertex orginalVertex = null;
+            if(component.size()>1){
+                List<Graph.Edge> newEdgeList = findIncomingOutgoingEdges(component);
+                for(Graph.Edge edges : newEdgeList){
+                    // determine whether it's an outgoing or incoming edge.
+                }
+
+                //disabling node edges should be the last thing
+                disableNodes(component);
+                orginalVertex = xGraph.addVertex();
+            }else{
+                //component has only 1 vertex in it
+                orginalVertex = component.get(0);
+            }
+            map.put(orginalVertex, component);
+        }
 
     }
 
@@ -47,7 +71,7 @@ public class TarjanMST {
 
     }
 
-    protected void disableNodesEdges(List<Graph.Vertex> vertices){
+    protected void disableNodes(List<Graph.Vertex> vertices){
         for (Graph.Vertex vertex : vertices) {
             XGraph.XVertex xVertex = xGraph.getVertex(vertex);
             xVertex.disabled = true;
@@ -57,7 +81,7 @@ public class TarjanMST {
         }
     }
 
-    protected void enableNodesEdges(List<Graph.Vertex> vertices){
+    protected void enableNodes(List<Graph.Vertex> vertices){
 
         for (Graph.Vertex vertex : vertices) {
             XGraph.XVertex xVertex = xGraph.getVertex(vertex);
@@ -69,7 +93,7 @@ public class TarjanMST {
     }
 
     //TODO: Implement enableNodes -- check if it should be a list of egdes or xedges
-    protected List<Graph.Edge> findIncomingOutgoingEdges(){
+    protected List<Graph.Edge> findIncomingOutgoingEdges(List<Graph.Vertex> vertices){
          return null;
     }
     

@@ -4,11 +4,9 @@ package cs6301.g60;
 // Do not rename this file or move it away from cs6301/g??
 
 // change following line to your group number
-import java.util.Scanner;
+import java.util.*;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.List;
-import java.util.ArrayList;
 
 import cs6301.g60.Graph.Vertex;
 import cs6301.g60.Graph.Edge;
@@ -27,7 +25,7 @@ public class LP3 {
             VERBOSE = Integer.parseInt(args[1]);
         }
 
-        int start = in.nextInt();  // root node of the MST
+        int start = in.nextInt();  // start node of the MST
         Graph g = Graph.readDirectedGraph(in);
         Vertex startVertex = g.getVertex(start);
         List<Edge> dmst = new ArrayList<>();
@@ -59,26 +57,30 @@ public class LP3 {
      */
     public static int directedMST(Graph g, Vertex start, List<Edge> dmst) {
         /**
-         * TODO: check if the all the nodes are reachable from the root node using BFS on object of Graph g
+         * TODO: check if the all the nodes are reachable from the start node using BFS on object of Graph g
          */
+
+        List<Edge> path = directedMSTHelper(g, start, dmst, new HashMap<>());
+        return path.size();
+    }
+
+    private static List<Edge> directedMSTHelper(Graph g, Vertex start, List<Edge> dmst, Map<Vertex, List<Vertex>> map){
 
         XGraph xgraph = new XGraph(g);
         TarjanMST tarjanMST = new TarjanMST(xgraph, xgraph.getVertex(start));
+        tarjanMST.reduceEdgeWeights();
+        /**
+         * TODO: run BFS on zero weighted edges
+         * if(reachable(map-size))
+         *     return list;
+         * else
+         *     shrink graph
+         */
+        DFS dfs = new DFS(xgraph);
+        
 
-        List<Graph.Vertex> l = new ArrayList<>();
-        for(Graph.Vertex vertex: xgraph) {
-            l.add(vertex);
-        }
 
-        BFSHash bh = new BFSHash(xgraph);
-        bh.runAndPrint(start);
 
-        //tarjanMST.reduceEdgeWeights();
-        tarjanMST.disableNodesEdges(l);
-        //tarjanMST.enableNodesEdges(l);
-
-        bh.runAndPrint(start);
-
-        return 0;
+        return null;
     }
 }
