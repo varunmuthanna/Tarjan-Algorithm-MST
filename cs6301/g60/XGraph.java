@@ -22,6 +22,8 @@ import java.util.LinkedList;
 
 
 public class XGraph extends Graph {
+	
+	static boolean zeroGraph = false;
 
     public static class XVertex extends Vertex {
         boolean disabled;
@@ -38,7 +40,13 @@ public class XGraph extends Graph {
         void disable() { disabled = true; }
 
         @Override
-        public Iterator<Edge> iterator() { return new XVertexIterator(this); }
+        public Iterator<Edge> iterator() {
+        	if(zeroGraph){
+        		return new XVertexIterator(this); 
+        	}else{
+        		return new XZeroEdgeIterator(this);
+        	}
+        }
 
         class XVertexIterator implements Iterator<Edge> {
             XEdge cur;
@@ -73,6 +81,42 @@ public class XGraph extends Graph {
 
             public void remove() {
                 throw new java.lang.UnsupportedOperationException();
+            }
+        }
+        
+        class XZeroEdgeIterator implements Iterator<Edge> {
+            XEdge cur;
+            Iterator<XEdge> it;
+            boolean ready;
+
+            XZeroEdgeIterator(XVertex u) {
+                this.it = u.xadj.iterator();
+                ready = false;
+            }
+
+            public boolean hasNext() {
+                if(ready) { return true; }
+                if(!it.hasNext()) { return false; }
+                cur = it.next();
+                while(cur.isDisabled() && it.hasNext() && cur.weight != 0) {
+                    cur = it.next();
+                }
+                ready = true;
+                return !cur.isDisabled() && cur.weight == 0;
+            }
+
+            public Edge next() {
+                if(!ready) {
+                    if(!hasNext()) {
+                        throw new java.util.NoSuchElementException();
+                    }
+                }
+                ready = false;
+                return cur;
+            }
+
+            public void remove() {
+            	throw new java.lang.UnsupportedOperationException();
             }
         }
     }
@@ -155,6 +199,10 @@ public class XGraph extends Graph {
     void disable(int i) {
         XVertex u = (XVertex) getVertex(i);
         u.disable();
+    }
+    
+    public void makeZeroGraph(){
+    	zeroGraph = true;
     }
 
     public String toString() {
