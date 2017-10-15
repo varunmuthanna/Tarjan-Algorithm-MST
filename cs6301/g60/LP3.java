@@ -58,6 +58,23 @@ public class LP3 {
      *  The function should return the total weight of the MST it found.
      */
     public static int directedMST(Graph g, Vertex start, List<Edge> dmst) {
+        /**
+         * TODO: check if the all the nodes are reachable from the root node using BFS on object of Graph g
+         */
+
+        XGraph xgraph = new XGraph(g);
+        TarjanMST tarjanMST = new TarjanMST(xgraph, xgraph.getVertex(start));
+
+        List<Graph.Vertex> l = new ArrayList<>();
+        for(Graph.Vertex vertex: tarjanMST.xGraph) {
+            l.add(vertex);
+        }
+        System.out.println(xgraph);
+        tarjanMST.reduceEdgeWeights();
+        tarjanMST.disableNodesEdges(l);
+        tarjanMST.enableNodesEdges(l);
+
+        System.out.println(xgraph);
         return 0;
     }
 }

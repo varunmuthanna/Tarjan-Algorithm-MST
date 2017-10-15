@@ -80,8 +80,8 @@ public class XGraph extends Graph {
     static class XEdge extends Edge {
         boolean disabled;
 
-        XEdge(XVertex from, XVertex to, int weight) {
-            super(from, to, weight);
+        XEdge(XVertex from, XVertex to, int weight, int name) {
+            super(from, to, weight, name);
             disabled = false;
         }
 
@@ -107,7 +107,7 @@ public class XGraph extends Graph {
                 Vertex v = e.otherEnd(u);
                 XVertex x1 = getVertex(u);
                 XVertex x2 = getVertex(v);
-                x1.xadj.add(new XEdge(x1, x2, e.weight));
+                x1.xadj.add(new XEdge(x1, x2, e.weight, e.name));
             }
         }
     }
@@ -155,6 +155,17 @@ public class XGraph extends Graph {
     void disable(int i) {
         XVertex u = (XVertex) getVertex(i);
         u.disable();
+    }
+
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (Graph.Vertex vertex : this){
+            for(Graph.Edge edge : vertex.revAdj ){
+                result.append(edge.toString()+" "+edge.weight+" ");
+            }
+            result.append("\n");
+        }
+        return result.toString();
     }
 
 }

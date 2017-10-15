@@ -7,33 +7,32 @@ import java.util.List;
  */
 public class TarjanMST {
 
-    XGraph xg;
-    Graph g;
+    XGraph xGraph;
     Graph.Vertex root;
 
-    public TarjanMST(Graph g, Graph.Vertex root){
-        this.g = g;
-        xg = new XGraph(g);
+    public TarjanMST(XGraph xGraph, Graph.Vertex root){
+        this.xGraph = xGraph;
         this.root = root;
     }
 
     protected void reduceEdgeWeights(){
-        for(Graph.Vertex vertex: xg){
-            if(vertex!=root && vertex.revAdj.size()>0) {
 
+        for(Graph.Vertex vertex: xGraph){
+            if(vertex!=root) {
+                vertex = xGraph.getVertex(vertex);
                 Graph.Edge min = vertex.revAdj.get(0);
                 for (Graph.Edge edge : vertex.revAdj) {
                     if (edge.getWeight()<min.getWeight()){
                         min = edge;
                     }
                 }
-
-                for (Graph.Edge edge : vertex.revAdj) {
+                 for (Graph.Edge edge : vertex.revAdj) {
                     edge.setWeight(edge.getWeight() - min.getWeight());
                 }
             }
         }
     }
+
     //TODO: Implement shrink graph
     protected void shrinkGraph(){
 
@@ -44,19 +43,30 @@ public class TarjanMST {
 
     }
 
-    //TODO: Implement disableNodes
-    protected void enableDisableNodesEdges(List<XGraph.XVertex> vertices){
-        for (XGraph.XVertex vertex : vertices) {
-            for (Graph.Edge edges : vertex) {
-                // TODO
-                ((XGraph.XEdge)edges).disabled = !((XGraph.XEdge)edges).disabled;
+    protected void disableNodesEdges(List<Graph.Vertex> vertices){
+        for (Graph.Vertex vertex : vertices) {
+            XGraph.XVertex xVertex = xGraph.getVertex(vertex);
+            xVertex.disabled = true;
+            for (Graph.Edge edge : xVertex) {
+                ((XGraph.XEdge)edge).disabled = true;
+            }
+        }
+    }
+
+    protected void enableNodesEdges(List<Graph.Vertex> vertices){
+
+        for (Graph.Vertex vertex : vertices) {
+            XGraph.XVertex xVertex = xGraph.getVertex(vertex);
+            xVertex.disabled = false;
+            for (Graph.Edge edge : xVertex) {
+                ((XGraph.XEdge)edge).disabled = false;
             }
         }
     }
 
     //TODO: Implement enableNodes -- check if it should be a list of egdes or xedges
     protected List<Graph.Edge> findIncomingOutgoingEdges(){
-        return null;
+         return null;
     }
 
 }

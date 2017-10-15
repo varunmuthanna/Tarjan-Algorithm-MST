@@ -115,22 +115,6 @@ public class Graph implements Iterable<Graph.Vertex> {
 		Vertex to;   // tail vertex
 		int weight;  // weight of edge
 		int name;    // name of edge
-		/**
-		 * Constructor for Edge
-		 *
-		 * @param u
-		 *            : Vertex - Vertex from which edge starts
-		 * @param v
-		 *            : Vertex - Vertex on which edge lands
-		 * @param w
-		 *            : int - Weight of edge
-		 */
-		public Edge(Vertex u, Vertex v, int w) {
-			from = u;
-			to = v;
-			weight = w;
-			name = -1;   // This version of constructor is for backward compatibility
-		}
 
 		/** New constructor of Edge that sets name of edge also
 		 */
@@ -277,30 +261,6 @@ public class Graph implements Iterable<Graph.Vertex> {
 	/* Method to get the whole array. Why is this needed? */
 	public Vertex[] getVertexArray() {
 		return vertex;
-	}
-
-	/**
-	 * Method to add an edge to the graph
-	 * This version is obsolete and kept for backward compatibility
-	 *
-	 * @param a
-	 *            : int - one end of edge
-	 * @param b
-	 *            : int - other end of edge
-	 * @param weight
-	 *            : int - the weight of the edge
-	 */
-	public Edge addEdge(Vertex from, Vertex to, int weight) {
-		Edge e = new Edge(from, to, weight);
-		if(directed) {
-			from.adj.add(e);
-			to.revAdj.add(e);
-		} else {
-			from.adj.add(e);
-			to.adj.add(e);
-		}
-		m++;  // Increment edge count
-		return e;
 	}
 
 	/** Another version of addEdge to include name */
