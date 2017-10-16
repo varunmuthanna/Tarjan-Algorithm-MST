@@ -28,22 +28,24 @@ public class TarjanMST {
         for(Graph.Vertex vertex: xGraph){
             if(!vertex.equals(start)) {
                 vertex = xGraph.getVertex(vertex);
-                Graph.Edge min = null;
+                int min = -1;
 
                 for (Graph.Edge edge : vertex) {
-                    if (min == null){
-                        min = edge;
-                    } else if(edge.getWeight()>0 && edge.getWeight()<min.getWeight()){
-                        min = edge;
+                    if (min == -1){
+                        min = edge.weight;
+                    } else if(edge.getWeight()>0 && edge.getWeight() < min){
+                        min = edge.weight;
                     }
                 }
-                if(min!=null) {
+                if(min!=-1) {
                     for (Graph.Edge edge : vertex) {
-                        edge.setWeight(edge.getWeight() - min.getWeight());
+                        edge.setWeight(edge.getWeight() - min);
                     }
                 }
             }
         }
+        
+        XGraph.getRevAdj = false;
 
         System.out.println("____Reduce Edge weights____");
         for(Graph.Vertex vertex: xGraph){
@@ -53,7 +55,7 @@ public class TarjanMST {
         }
         System.out.println("_____________");
 
-        XGraph.getRevAdj = false;
+        
 
     }
 
