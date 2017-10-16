@@ -165,7 +165,7 @@ public class TarjanMST {
         System.out.println("Original Graph");
         SCC scc = new SCC();
         scc.getAllScc(tMST.xGraph, xg.getVertex(startVertex));
-        int ind = 0;
+        int ind = 1;
         for(List<Graph.Vertex> l : scc.list){
         	System.out.println("component " + ind + " are");
         	for(Graph.Vertex v: l){

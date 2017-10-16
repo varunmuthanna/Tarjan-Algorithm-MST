@@ -102,7 +102,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 		}
 		time = time + 1;
 		visitAtFinish(u, time);
-		decFinList.add(u);
+		decFinList.add(0, u);
 	}
 	
 	/*
