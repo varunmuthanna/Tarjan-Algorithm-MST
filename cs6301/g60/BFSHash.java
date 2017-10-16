@@ -113,6 +113,15 @@ public class BFSHash extends GraphHash<BFSVertex,Boolean> {
         }
     }
 
+    boolean reachable(){
+        for(Vertex u: g) {
+            if(getDistance(u)==INFINITY){
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static void main(String[] args) {
         Graph g = Graph.readDirectedGraph(new Scanner(System.in));
 

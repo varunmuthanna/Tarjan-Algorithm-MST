@@ -55,40 +55,50 @@ public class LP3 {
      *  So, the list has a null corresponding to Vertex 3.
      *  The function should return the total weight of the MST it found.
      */
+
+    static TarjanMST tarjanMST;
+    static XGraph xgraph;
+
     public static int directedMST(Graph g, Vertex start, List<Edge> dmst) {
         /**
          * TODO: check if the all the nodes are reachable from the start node using BFS on object of Graph g
          */
-        XGraph xgraph = new XGraph(g);
-        TarjanMST tarjanMST = new TarjanMST(xgraph, xgraph.getVertex(start));
-        System.out.println(xgraph);
-        tarjanMST.reduceEdgeWeights();
-        System.out.println(xgraph);
-        tarjanMST.reduceEdgeWeights();
-        System.out.println(xgraph);
 
-        return 0;
-/*        List<Edge> path = directedMSTHelper(g, start, dmst, new HashMap<>());
-        return path.size();*/
+
+        xgraph = new XGraph(g);
+        tarjanMST = new TarjanMST(xgraph, xgraph.getVertex(start));
+        List<Edge> path = directedMSTHelper(start, dmst, new HashMap<>());
+        return path.size();
     }
 
-    private static List<Edge> directedMSTHelper(Graph g, Vertex start, List<Edge> dmst, Map<Vertex, List<Vertex>> map){
+    private static List<Edge> directedMSTHelper(Vertex start, List<Edge> dmst, Map<Vertex, List<Vertex>> map){
 
-        XGraph xgraph = new XGraph(g);
-        TarjanMST tarjanMST = new TarjanMST(xgraph, xgraph.getVertex(start));
+
+        //base condition
+        XGraph.zeroGraph = true;
+        BFSHash bh = new BFSHash(xgraph);
+        bh.runAndPrint(xgraph.getVertex(start));
+        if(bh.reachable()) {
+            XGraph.zeroGraph = false;
+            return dmst;
+        }
+        XGraph.zeroGraph = false;
+
+        System.out.println(xgraph);
         tarjanMST.reduceEdgeWeights();
-        /**
-         * TODO: run BFS on zero weighted edges
-         * if(reachable(map-size))
-         *     return list;
-         * else
-         *     shrink graph
-         */
-        DFS dfs = new DFS(xgraph);
-        
-
-
-
-        return null;
+        System.out.println(xgraph);
+        XGraph.zeroGraph = true;
+        BFSHash bh1 = new BFSHash(xgraph);
+        bh1.runAndPrint(xgraph.getVertex(start));
+        if(bh1.reachable()){
+            XGraph.zeroGraph = false;
+            return dmst;
+        }else {
+            start = tarjanMST.shrinkGraph();
+        }
+        directedMSTHelper(start, dmst, map);
+        tarjanMST.expandGraph();
+        System.out.println("___________");
+        return dmst;
     }
 }

@@ -26,15 +26,14 @@ public class TarjanMST {
     protected void reduceEdgeWeights(){
         XGraph.getRevAdj = true;
         for(Graph.Vertex vertex: xGraph){
-            if(vertex!= start) {
+            if(!vertex.equals(start)) {
                 vertex = xGraph.getVertex(vertex);
                 Graph.Edge min = null;
 
                 for (Graph.Edge edge : vertex) {
                     if (min == null){
                         min = edge;
-                    }
-                    if (edge.getWeight()>0 && edge.getWeight()<min.getWeight()){
+                    } else if(edge.getWeight()>0 && edge.getWeight()<min.getWeight()){
                         min = edge;
                     }
                 }
@@ -45,10 +44,20 @@ public class TarjanMST {
                 }
             }
         }
+
+        System.out.println("____Reduce Edge weights____");
+        for(Graph.Vertex vertex: xGraph){
+            for (Graph.Edge edge : vertex) {
+                System.out.println(edge +" "+edge.weight);
+            }
+        }
+        System.out.println("_____________");
+
         XGraph.getRevAdj = false;
+
     }
 
-    protected void shrinkGraph(){
+    protected Graph.Vertex shrinkGraph(){
         SCC scc = new SCC();
         XGraph.zeroGraph = true;
         scc.getAllScc(xGraph, start);
@@ -56,6 +65,7 @@ public class TarjanMST {
         XGraph.zeroGraph = false;
 
         for(List<Graph.Vertex> component : components){
+            System.out.println(component);
             Graph.Vertex newVertex = null;
             if(component.size()>1){
                 newVertex = addIncomingOutgoingEdges(component);
@@ -70,6 +80,8 @@ public class TarjanMST {
             }
             map.put(newVertex, component);
         }
+
+        return start;
     }
 
     //TODO: Implement expand graph
@@ -107,6 +119,9 @@ public class TarjanMST {
     	}
     	
     	for(Graph.Vertex u : vertices){
+    	    if(u==start){
+    	        start = newVertex;
+            }
     		for(Graph.Edge e : u){
     			Graph.Vertex v = e.otherEnd(u);
     			if(hash.containsKey(v)){
