@@ -2,9 +2,7 @@ package cs6301.g60;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Created by shivan on 10/12/17.
@@ -14,13 +12,17 @@ public class TarjanMST {
     XGraph xGraph;
     Graph.Vertex start;
 
-    //map used to map new Vertex to a list of vertices in a particular component
-    HashMap<Graph.Vertex, List<Graph.Vertex>> map;
+    //vertexToComponentList used to vertexToComponentList new Vertex to a list of vertices in a particular component
+    HashMap<Graph.Vertex, List<Graph.Vertex>> vertexToComponentList;
+    HashMap<XGraph.XVertex, XGraph.XVertex> vertexToComponentRep;
+    HashMap<Graph.Edge, Graph.Edge> newEdgeToOldEdge;
 
     public TarjanMST(XGraph xGraph, Graph.Vertex root){
         this.xGraph = xGraph;
         this.start = root;
-        map = new HashMap<>();
+        vertexToComponentList = new HashMap<>();
+        vertexToComponentRep = new HashMap<>();
+        newEdgeToOldEdge = new HashMap<>();
     }
 
     protected void reduceEdgeWeights(){
@@ -33,7 +35,7 @@ public class TarjanMST {
                 for (Graph.Edge edge : vertex) {
                     if (min == -1){
                         min = edge.weight;
-                    } else if(edge.getWeight()>0 && edge.getWeight() < min){
+                    } else if(edge.getWeight()>=0 && edge.getWeight() < min){
                         min = edge.weight;
                     }
                 }
@@ -47,13 +49,13 @@ public class TarjanMST {
         
         XGraph.getRevAdj = false;
 
-        System.out.println("____Reduce Edge weights____");
+        /*System.out.println("____Reduce Edge weights____");
         for(Graph.Vertex vertex: xGraph){
             for (Graph.Edge edge : vertex) {
                 System.out.println(edge +" "+edge.weight);
             }
         }
-        System.out.println("_____________");
+        System.out.println("_____________");*/
 
         
 
@@ -68,22 +70,72 @@ public class TarjanMST {
 
         for(List<Graph.Vertex> component : components){
             System.out.println(component);
-            Graph.Vertex newVertex = null;
+            XGraph.XVertex newVertex = null;
             if(component.size()>1){
-                newVertex = addIncomingOutgoingEdges(component);
+                newVertex = new XGraph.XVertex(xGraph.addVertex());
                 xGraph.addVertex(newVertex);
 
                 //disabling node edges should be the last thing
-                disableNodes(component);
+                //disableNodes(component);
                 
             }else{
                 //component has only 1 vertex in it
-            	newVertex = component.get(0);
+            	newVertex = (XGraph.XVertex) component.get(0);
             }
-            map.put(newVertex, component);
+            vertexToComponentList.put(newVertex, component);
+
+            for(Graph.Vertex vertex : component) {
+                vertexToComponentRep.put((XGraph.XVertex) vertex, newVertex);
+            }
+        }
+
+        for(List<Graph.Vertex> component : components){
+            addIncomingOutgoingEdges(component);
+        }
+        for(List<Graph.Vertex> component : components){
+            if(component.size()>1)
+                disableNodes(component);
         }
 
         return start;
+    }
+
+    protected void addIncomingOutgoingEdges(List<Graph.Vertex> vertices){
+        //TODO: check if this map can be taken out
+        // new component vertex to adj list mapping
+        Map<Graph.Vertex, Graph.Edge> minEdgeForComponent = new HashMap<>();
+
+        for(Graph.Vertex v : vertices) {
+            XGraph.getRevAdj = true;
+            for(Graph.Edge e : v){
+                Graph.Vertex u = e.otherEnd(v);
+                XGraph.XVertex to = vertexToComponentRep.get(u);
+                XGraph.XVertex from = vertexToComponentRep.get(v);
+                if(from.equals(to)){
+                    continue;
+                }
+                //Graph.Edge newEdge = xGraph.addEdge(from, to, e.weight, xGraph.edgeSize());
+                //newEdgeToOldEdge.put(newEdge, e);
+
+                if(minEdgeForComponent.containsKey(to)) {
+                    if(minEdgeForComponent.get(to).getWeight() > e.getWeight()) {
+                        minEdgeForComponent.replace(to, e);
+                    }
+                }else{
+                    minEdgeForComponent.put(to, e);
+                }
+            }
+            XGraph.getRevAdj = false;
+        }
+
+        for(Map.Entry<Graph.Vertex, Graph.Edge> it :minEdgeForComponent.entrySet()) {
+            Graph.Edge e = it.getValue();
+            // this check avoids adding redundant edges
+            if (vertexToComponentList.get(vertexToComponentRep.get(e.from)).size() > 1 || vertexToComponentList.get(vertexToComponentRep.get(e.to)).size() > 1) {
+                Graph.Edge newEdge = xGraph.addEdge(xGraph.getVertex(vertexToComponentRep.get(e.from)), xGraph.getVertex(vertexToComponentRep.get(e.to)), e.weight, xGraph.edgeSize());
+                newEdgeToOldEdge.put(newEdge, e);
+            }
+        }
     }
 
     //TODO: Implement expand graph
@@ -92,17 +144,25 @@ public class TarjanMST {
     }
 
     protected void disableNodes(List<Graph.Vertex> vertices){
+        //XGraph.getRevAdj = true;
         for (Graph.Vertex vertex : vertices) {
             XGraph.XVertex xVertex = xGraph.getVertex(vertex);
-            xVertex.disabled = true;
+
             for (Graph.Edge edge : xVertex) {
                 ((XGraph.XEdge)edge).disabled = true;
             }
+            XGraph.getRevAdj = true;
+            for (Graph.Edge edge : xVertex) {
+                ((XGraph.XEdge)edge).disabled = true;
+            }
+            XGraph.getRevAdj = false;
+            xVertex.disabled = true;
         }
+        //XGraph.getRevAdj = false;
     }
 
     protected void enableNodes(List<Graph.Vertex> vertices){
-
+        XGraph.getRevAdj = true;
         for (Graph.Vertex vertex : vertices) {
             XGraph.XVertex xVertex = xGraph.getVertex(vertex);
             xVertex.disabled = false;
@@ -110,10 +170,10 @@ public class TarjanMST {
                 ((XGraph.XEdge)edge).disabled = false;
             }
         }
+        XGraph.getRevAdj = false;
     }
 
-    //TODO: Implement enableNodes -- check if it should be a list of egdes or xedges
-    protected Graph.Vertex addIncomingOutgoingEdges(List<Graph.Vertex> vertices){
+    /*protected Graph.Vertex addIncomingOutgoingEdges(List<Graph.Vertex> vertices){
     	Graph.Vertex newVertex = xGraph.addVertex();
     	HashMap<Graph.Vertex, Boolean> hash = new HashMap<>();
     	for(Graph.Vertex u : vertices){
@@ -142,7 +202,7 @@ public class TarjanMST {
     		XGraph.getRevAdj = false;
     	}
     	return newVertex;
-    }
+    }*/
     
     
     public static void main(String[] args) throws FileNotFoundException{

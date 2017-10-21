@@ -278,6 +278,7 @@ public class Graph implements Iterable<Graph.Vertex> {
 		return e;
 	}
 
+
 	public Vertex addVertex(){
 		return new Vertex(n++);
 	}

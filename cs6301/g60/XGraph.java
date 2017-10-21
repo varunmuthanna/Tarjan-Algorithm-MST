@@ -13,11 +13,9 @@
 
 package cs6301.g60;
 
+import javax.xml.bind.annotation.XmlElementDecl;
 import java.util.Iterator;
 import java.util.List;
-
-import cs6301.g60.Graph.Edge;
-import cs6301.g60.Graph.Vertex;
 
 import java.util.LinkedList;
 
@@ -165,27 +163,18 @@ public class XGraph extends Graph {
             }
         }
     }
-    
+
     public void addVertex(Vertex u){
+
     	xv[u.getName()] = new XVertex(u);
-    	for(Edge e: u) {
-            Vertex v = e.otherEnd(u);
-            XVertex x1 = getVertex(u);
-            XVertex x2 = getVertex(v);
-            XEdge newEdge = new XEdge(x1, x2, e.weight, e.name);
-            x1.xadj.add(newEdge);
-            x2.xrevadj.add(newEdge);
-        }
-    	
-    	for(Iterator<Edge> it = u.reverseIterator(); it.hasNext(); ){
-    		Edge e = it.next();
-    		Vertex v = e.otherEnd(u);
-            XVertex x1 = getVertex(u);
-            XVertex x2 = getVertex(v);
-            XEdge newEdge = new XEdge(x2, x1, e.weight, e.name);
-            x1.xrevadj.add(newEdge);
-            x2.xadj.add(newEdge);   		
-    	}
+    }
+
+    public Edge addEdge(XVertex from, XVertex to, int weight, int name){
+        super.addEdge(from, to, weight, name);
+        XEdge newEdge = new XEdge(from, to, weight, name);
+        getVertex(from).xadj.add(newEdge);
+        getVertex(to).xrevadj.add(newEdge);
+        return newEdge;
     }
 
     @Override
