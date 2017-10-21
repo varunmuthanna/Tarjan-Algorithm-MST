@@ -72,7 +72,7 @@ public class LP3 {
     }
 
     private static List<Edge> directedMSTHelper(Vertex start, List<Edge> dmst, Map<Vertex, List<Vertex>> map){
-        //System.out.println(xgraph);
+
         tarjanMST.reduceEdgeWeights();
         System.out.println("Started reducing weights");
         System.out.print(xgraph);

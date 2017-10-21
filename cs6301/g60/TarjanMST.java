@@ -46,19 +46,7 @@ public class TarjanMST {
                 }
             }
         }
-        
         XGraph.getRevAdj = false;
-
-        /*System.out.println("____Reduce Edge weights____");
-        for(Graph.Vertex vertex: xGraph){
-            for (Graph.Edge edge : vertex) {
-                System.out.println(edge +" "+edge.weight);
-            }
-        }
-        System.out.println("_____________");*/
-
-        
-
     }
 
     protected Graph.Vertex shrinkGraph(){
@@ -75,26 +63,21 @@ public class TarjanMST {
                 newVertex = new XGraph.XVertex(xGraph.addVertex());
                 xGraph.addVertex(newVertex);
 
-                //disabling node edges should be the last thing
-                //disableNodes(component);
-                
-            }else{
-                //component has only 1 vertex in it
-            	newVertex = (XGraph.XVertex) component.get(0);
+                for(Graph.Vertex vertex : component) {
+                    vertexToComponentRep.put((XGraph.XVertex) vertex, newVertex);
+                }
             }
             vertexToComponentList.put(newVertex, component);
 
-            for(Graph.Vertex vertex : component) {
-                vertexToComponentRep.put((XGraph.XVertex) vertex, newVertex);
-            }
         }
 
         for(List<Graph.Vertex> component : components){
             addIncomingOutgoingEdges(component);
         }
         for(List<Graph.Vertex> component : components){
-            if(component.size()>1)
+            if(component.size()>1) {
                 disableNodes(component);
+            }
         }
 
         return start;
@@ -109,32 +92,30 @@ public class TarjanMST {
             XGraph.getRevAdj = true;
             for(Graph.Edge e : v){
                 Graph.Vertex u = e.otherEnd(v);
-                XGraph.XVertex to = vertexToComponentRep.get(u);
-                XGraph.XVertex from = vertexToComponentRep.get(v);
-                if(from.equals(to)){
+                Graph.Vertex to = vertexToComponentRep.containsKey(v)?vertexToComponentRep.get(v):v;
+                Graph.Vertex from = vertexToComponentRep.containsKey(u)?vertexToComponentRep.get(u):u;
+                if((!vertexToComponentRep.containsKey(v) && !vertexToComponentRep.containsKey(u)) || from.equals(to)){
                     continue;
                 }
-                //Graph.Edge newEdge = xGraph.addEdge(from, to, e.weight, xGraph.edgeSize());
-                //newEdgeToOldEdge.put(newEdge, e);
 
-                if(minEdgeForComponent.containsKey(to)) {
-                    if(minEdgeForComponent.get(to).getWeight() > e.getWeight()) {
-                        minEdgeForComponent.replace(to, e);
+                if(minEdgeForComponent.containsKey(from)) {
+                    if(minEdgeForComponent.get(from).getWeight() > e.getWeight()) {
+                        minEdgeForComponent.replace(from, e);
                     }
                 }else{
-                    minEdgeForComponent.put(to, e);
+                    minEdgeForComponent.put(from, e);
                 }
             }
             XGraph.getRevAdj = false;
         }
-
+        //minEdgeForComponent contains edges that have a component with size >1 involved as one of the edge endpoints.
         for(Map.Entry<Graph.Vertex, Graph.Edge> it :minEdgeForComponent.entrySet()) {
             Graph.Edge e = it.getValue();
             // this check avoids adding redundant edges
-            if (vertexToComponentList.get(vertexToComponentRep.get(e.from)).size() > 1 || vertexToComponentList.get(vertexToComponentRep.get(e.to)).size() > 1) {
-                Graph.Edge newEdge = xGraph.addEdge(xGraph.getVertex(vertexToComponentRep.get(e.from)), xGraph.getVertex(vertexToComponentRep.get(e.to)), e.weight, xGraph.edgeSize());
-                newEdgeToOldEdge.put(newEdge, e);
-            }
+            Graph.Vertex from = vertexToComponentRep.containsKey(e.from)?vertexToComponentRep.get(e.from):e.from;
+            Graph.Vertex to = vertexToComponentRep.containsKey(e.to)?vertexToComponentRep.get(e.to):e.to;
+            Graph.Edge newEdge = xGraph.addEdge(xGraph.getVertex(from), xGraph.getVertex(to), e.weight, xGraph.edgeSize());
+            newEdgeToOldEdge.put(newEdge, e);
         }
     }
 
@@ -144,7 +125,6 @@ public class TarjanMST {
     }
 
     protected void disableNodes(List<Graph.Vertex> vertices){
-        //XGraph.getRevAdj = true;
         for (Graph.Vertex vertex : vertices) {
             XGraph.XVertex xVertex = xGraph.getVertex(vertex);
 
@@ -158,7 +138,6 @@ public class TarjanMST {
             XGraph.getRevAdj = false;
             xVertex.disabled = true;
         }
-        //XGraph.getRevAdj = false;
     }
 
     protected void enableNodes(List<Graph.Vertex> vertices){
