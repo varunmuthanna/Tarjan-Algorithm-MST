@@ -67,30 +67,31 @@ public class LP3 {
 
         xgraph = new XGraph(g);
         tarjanMST = new TarjanMST(xgraph, xgraph.getVertex(start));
-        List<Edge> path = directedMSTHelper(start, dmst, new HashMap<>());
+        List<Edge> path = directedMSTHelper(start, dmst);
         return path.size();
     }
 
-    private static List<Edge> directedMSTHelper(Vertex start, List<Edge> dmst, Map<Vertex, List<Vertex>> map){
+    private static List<Edge> directedMSTHelper(Vertex start, List<Edge> dmst){
 
-        tarjanMST.reduceEdgeWeights();
-        System.out.println("Started reducing weights");
-        System.out.print(xgraph);
-        System.out.println("Weights reduction complete");
-        XGraph.zeroGraph = true;
-        BFSHash bh1 = new BFSHash(xgraph);
-        bh1.runAndPrint(xgraph.getVertex(start));
-
-        if(bh1.reachable()){
+        while (true) {
+            System.out.println("after reducing weights");
+            tarjanMST.reduceEdgeWeights();
+            //System.out.print(xgraph);
+            System.out.println();
+            XGraph.zeroGraph = true;
+            BFSHash bfs = new BFSHash(xgraph);
+            bfs.runAndPrint(xgraph.getVertex(start));
             XGraph.zeroGraph = false;
-            return dmst;
-        }else {
-            start = tarjanMST.shrinkGraph();
+            if(bfs.reachable()){
+                //dmst = find path using dfs
+                break;
+            }else {
+                start = tarjanMST.shrinkGraph();
+            }
+            System.out.println("after shrinking:  \n" + xgraph);
         }
-        System.out.println("after shrinking:  \n" + xgraph);
-        directedMSTHelper(start, dmst, map);
-        tarjanMST.expandGraph();
-        System.out.println("___________");
+
+        dmst = tarjanMST.expandGraph(dmst);
         return dmst;
     }
 }

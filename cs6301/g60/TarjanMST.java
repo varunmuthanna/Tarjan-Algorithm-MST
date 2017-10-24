@@ -120,8 +120,22 @@ public class TarjanMST {
     }
 
     //TODO: Implement expand graph
-    protected void expandGraph(){
+    protected List<Graph.Edge> expandGraph(List<Graph.Edge> list){
+        for(Graph.Edge edge : list) {
+            Graph.Vertex from = edge.from;
+            Graph.Vertex to = edge.to;
+            if (vertexToComponentList.containsKey(to) && vertexToComponentList.containsKey(from)) {
+                //expand graph
+                /**
+                 * remove edge from the list after expanding it and add the resultant edges
+                 */
+            } else if (vertexToComponentList.containsKey(to)) {
 
+            } else if (vertexToComponentList.containsKey(from)) {
+
+            }
+        }
+        return list;
     }
 
     protected void disableNodes(List<Graph.Vertex> vertices){
@@ -182,8 +196,7 @@ public class TarjanMST {
     	}
     	return newVertex;
     }*/
-    
-    
+
     public static void main(String[] args) throws FileNotFoundException{
     	Scanner in;
         if (args.length > 0) {
