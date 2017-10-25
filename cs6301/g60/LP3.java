@@ -72,7 +72,25 @@ public class LP3 {
     }
 
     private static List<Edge> directedMSTHelper(Vertex start, List<Edge> dmst){
+        /*tarjanMST.reduceEdgeWeights();
+        System.out.println("Started reducing weights");
+        System.out.print(xgraph);
+        System.out.println("Weights reduction complete");
+        XGraph.zeroGraph = true;
+        BFSHash bh1 = new BFSHash(xgraph);
+        bh1.runAndPrint(xgraph.getVertex(start));
 
+        if(bh1.reachable()){
+            return dmst;
+        }else {
+            start = tarjanMST.shrinkGraph();
+        }
+        System.out.println("after shrinking:  \n" + xgraph);
+        directedMSTHelper(start, dmst);
+        tarjanMST.expandGraph();
+        System.out.println("___________");
+
+        return null;*/
         while (true) {
             System.out.println("after reducing weights");
             tarjanMST.reduceEdgeWeights();
@@ -91,7 +109,8 @@ public class LP3 {
             System.out.println("after shrinking:  \n" + xgraph);
         }
 
-        dmst = tarjanMST.expandGraph(dmst);
+        tarjanMST.expandGraph();
+        System.out.println("Final graph: "+xgraph);
         return dmst;
     }
 }

@@ -25,6 +25,7 @@ public class XGraph extends Graph {
 	
     static boolean zeroGraph = false;
     static boolean getRevAdj = false;
+    static boolean getAllEdges = false;
 
     public static class XVertex extends Vertex {
         boolean disabled;
@@ -68,11 +69,14 @@ public class XGraph extends Graph {
                 if(ready) { return true; }
                 if(!it.hasNext()) { return false; }
                 cur = it.next();
-                while(cur.isDisabled() && it.hasNext()) {
-                    cur = it.next();
+                if(!getAllEdges) {
+                    while (cur.isDisabled() && it.hasNext()) {
+                        cur = it.next();
+                    }
                 }
                 ready = true;
-                return !cur.isDisabled();
+                return !cur.isDisabled() || getAllEdges;
+
             }
 
             public Edge next() {
@@ -251,6 +255,11 @@ public class XGraph extends Graph {
         }
         //XGraph.getRevAdj = false;
         return result.toString();
+    }
+
+    /* Method to get the whole array. Why is this needed? */
+    public Vertex[] getVertexArray() {
+        return xv;
     }
 
 }
