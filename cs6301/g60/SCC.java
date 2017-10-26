@@ -74,17 +74,22 @@ public class SCC {
         Graph g = Graph.readDirectedGraph(in);
         Graph.Vertex startVertex = g.getVertex(start);
         
-        SCC scc = new SCC();
-        scc.getAllScc(g, startVertex);
-        System.out.println("total SCC is" + scc.totalScc);
-        int ind = 1;
-        for(List<Graph.Vertex> l : scc.list){
-        	System.out.println("component " + ind + " are");
-        	for(Graph.Vertex v: l){
-        		System.out.print(v.toString() + ",");
-        	}
-        	System.out.println();
-        	ind++;
+        DFS d = new DFS(g);
+        d.dfs(startVertex);
+        for(Graph.Edge e : d.dfsEdgeList){
+        	System.out.println(e);
         }
+//        SCC scc = new SCC();
+//        scc.getAllScc(g, startVertex);
+//        System.out.println("total SCC is" + scc.totalScc);
+//        int ind = 1;
+//        for(List<Graph.Vertex> l : scc.list){
+//        	System.out.println("component " + ind + " are");
+//        	for(Graph.Vertex v: l){
+//        		System.out.print(v.toString() + ",");
+//        	}
+//        	System.out.println();
+//        	ind++;
+//        }
 	}
 }

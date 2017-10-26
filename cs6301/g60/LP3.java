@@ -55,7 +55,6 @@ public class LP3 {
      *  So, the list has a null corresponding to Vertex 3.
      *  The function should return the total weight of the MST it found.
      */
-
     static TarjanMST tarjanMST;
     static XGraph xgraph;
 
@@ -92,10 +91,10 @@ public class LP3 {
 
         return null;*/
         while (true) {
-            System.out.println("after reducing weights");
+            //System.out.println("after reducing weights");
             tarjanMST.reduceEdgeWeights();
             //System.out.print(xgraph);
-            System.out.println();
+            //System.out.println();
             XGraph.zeroGraph = true;
             BFSHash bfs = new BFSHash(xgraph);
             bfs.runAndPrint(xgraph.getVertex(start));
@@ -106,11 +105,21 @@ public class LP3 {
             }else {
                 start = tarjanMST.shrinkGraph();
             }
-            System.out.println("after shrinking:  \n" + xgraph);
+            //System.out.println("after shrinking:  \n" + xgraph);
         }
 
         tarjanMST.expandGraph();
-        System.out.println("Final graph: "+xgraph);
+        XGraph.zeroGraph = true;
+        DFS d = new DFS(xgraph);
+        d.dfs(xgraph.getVertex(start));
+        int mstWeight = 0;
+        for(Graph.Edge e : d.dfsEdgeList){
+        	System.out.print(e + ",");
+        	mstWeight += ((XGraph.XEdge)e).original_weight;
+        }
+        System.out.println();
+        //System.out.println("Final graph: "+xgraph);
+        System.out.println("Output = " + mstWeight);
         return dmst;
     }
 }

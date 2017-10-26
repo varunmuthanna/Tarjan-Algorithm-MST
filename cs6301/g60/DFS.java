@@ -5,6 +5,7 @@
  */
 
 package cs6301.g60;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +14,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 	
 	int time = 0;
 	List<Graph.Vertex> decFinList;
+	List<Graph.Edge> dfsEdgeList;
 	int cno = 0;
 	
 	//Class to store information about DFS on vertex
@@ -70,6 +72,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 	
 	public void dfs(Graph.Vertex u){
 		decFinList = new LinkedList<>();
+		dfsEdgeList = new ArrayList<>();
 		cno++;
 		DFSVisit(u);
 		Iterator<Graph.Vertex> it = g.iterator();
@@ -97,6 +100,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 			Graph.Vertex v = e.otherEnd(u);
 			if(!seen(v)){
 				getVertex(v).parent = u;
+				dfsEdgeList.add(e);
 				DFSVisit(v);
 			}
 		}

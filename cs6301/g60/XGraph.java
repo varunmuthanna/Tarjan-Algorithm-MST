@@ -133,9 +133,11 @@ public class XGraph extends Graph {
 
     static class XEdge extends Edge {
         boolean disabled;
+        int original_weight;
 
         XEdge(XVertex from, XVertex to, int weight, int name) {
             super(from, to, weight, name);
+            original_weight = weight;
             disabled = false;
         }
 

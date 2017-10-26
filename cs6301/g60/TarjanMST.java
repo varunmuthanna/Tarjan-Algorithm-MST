@@ -57,7 +57,7 @@ public class TarjanMST {
         XGraph.zeroGraph = false;
 
         for(List<Graph.Vertex> component : components){
-            System.out.println(component);
+            //System.out.println(component);
             XGraph.XVertex newVertex = null;
             if(component.size()>1){
                 newVertex = new XGraph.XVertex(xGraph.addVertex());
