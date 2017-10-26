@@ -92,10 +92,10 @@ public class LP3 {
 
         return null;*/
         while (true) {
-            System.out.println("after reducing weights");
+            //System.out.println("after reducing weights");
             tarjanMST.reduceEdgeWeights();
             //System.out.print(xgraph);
-            System.out.println();
+            //System.out.println();
             XGraph.zeroGraph = true;
             BFSHash bfs = new BFSHash(xgraph);
             bfs.runAndPrint(xgraph.getVertex(start));
@@ -106,7 +106,7 @@ public class LP3 {
             }else {
                 start = tarjanMST.shrinkGraph();
             }
-            System.out.println("after shrinking:  \n" + xgraph);
+            //System.out.println("after shrinking:  \n" + xgraph);
         }
 
         tarjanMST.expandGraph();

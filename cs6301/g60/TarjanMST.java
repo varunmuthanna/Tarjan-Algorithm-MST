@@ -57,7 +57,7 @@ public class TarjanMST {
         XGraph.zeroGraph = false;
 
         for(List<Graph.Vertex> component : components){
-            System.out.println(component);
+            //System.out.println(component);
             XGraph.XVertex newVertex = null;
             if(component.size()>1){
                 newVertex = new XGraph.XVertex(xGraph.addVertex());
@@ -218,58 +218,4 @@ public class TarjanMST {
     	}
     	return newVertex;
     }*/
-
-    public static void main(String[] args) throws FileNotFoundException{
-    	Scanner in;
-        if (args.length > 0) {
-            File inputFile = new File(args[0]);
-            in = new Scanner(inputFile);
-        } else {
-            in = new Scanner(System.in);
-        }
-        System.out.println("reading input");
-	    int start = 1;
-        if(args.length > 1) {
-	        start = Integer.parseInt(args[1]);
-	    }
-
-        Graph g = Graph.readDirectedGraph(in);
-        Graph.Vertex startVertex = g.getVertex(start);
-        
-        XGraph xg = new XGraph(g);
-        TarjanMST tMST = new TarjanMST(xg,xg.getVertex(startVertex));
-        System.out.println("Original Graph");
-        SCC scc = new SCC();
-        scc.getAllScc(tMST.xGraph, xg.getVertex(startVertex));
-        int ind = 1;
-        for(List<Graph.Vertex> l : scc.list){
-        	System.out.println("component " + ind + " are");
-        	for(Graph.Vertex v: l){
-        		System.out.print(v.toString() + ",");
-        	}
-        	System.out.println();
-        	ind++;
-        }
-        System.out.println(tMST.xGraph);
-        
-        tMST.reduceEdgeWeights();
-        //tMST.xGraph.makeZeroGraph();
-        
-//        System.out.println("Zero Graph");
-//        scc = new SCC();
-//        scc.getAllScc(tMST.xGraph, xg.getVertex(startVertex));
-//        ind = 0;
-//        for(List<Graph.Vertex> l : scc.list){
-//        	System.out.println("component " + ind + " are");
-//        	for(Graph.Vertex v: l){
-//        		System.out.print(v.toString() + ",");
-//        	}
-//        	System.out.println();
-//        	ind++;
-//        }
-        tMST.shrinkGraph();
-        System.out.println("new graph");
-        System.out.println(tMST.xGraph);
-    }
-
 }
