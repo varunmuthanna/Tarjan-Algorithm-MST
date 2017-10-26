@@ -14,7 +14,7 @@ public class TarjanMST {
 
     //vertexToComponentList used to vertexToComponentList new Vertex to a list of vertices in a particular component
     HashMap<Graph.Vertex, List<Graph.Vertex>> vertexToComponentList;
-    HashMap<XGraph.XVertex, XGraph.XVertex> vertexToComponentRep;
+    HashMap<Graph.Vertex, Graph.Vertex> vertexToComponentRep;
     HashMap<Graph.Edge, Graph.Edge> newEdgeToOldEdge;
 
     public TarjanMST(XGraph xGraph, Graph.Vertex root){
@@ -119,51 +119,73 @@ public class TarjanMST {
         }
     }
 
-    //TODO: Implement expand graph
-    protected List<Graph.Edge> expandGraph(List<Graph.Edge> list){
-        for(Graph.Edge edge : list) {
-            Graph.Vertex from = edge.from;
-            Graph.Vertex to = edge.to;
-            if (vertexToComponentList.containsKey(to) && vertexToComponentList.containsKey(from)) {
-                //expand graph
-                /**
-                 * remove edge from the list after expanding it and add the resultant edges
-                 */
-            } else if (vertexToComponentList.containsKey(to)) {
+    protected void expandGraph(){
+        Graph.Vertex[] arr = xGraph.getVertexArray();
 
-            } else if (vertexToComponentList.containsKey(from)) {
 
+        //TODO: write an iterator for this
+        for(int i=xGraph.n-1;i>0;i--) {
+            if (vertexToComponentList.containsKey(arr[i])) {
+                Graph.Vertex nodeToDisable = arr[i];
+                List<Graph.Vertex> nodesToEnable = vertexToComponentList.get(arr[i]);
+
+                for (Graph.Edge edge : nodeToDisable) {
+                    if (newEdgeToOldEdge.containsKey(edge)) {
+                        newEdgeToOldEdge.get(edge).setWeight(edge.getWeight());
+                    }
+                }
+                XGraph.getRevAdj = true;
+                for (Graph.Edge edge : nodeToDisable) {
+                    if (newEdgeToOldEdge.containsKey(edge)) {
+                        newEdgeToOldEdge.get(edge).setWeight(edge.getWeight());
+                    }
+                }
+                XGraph.getRevAdj = false;
+
+                disableNode(nodeToDisable);
+                enableNodes(nodesToEnable);
+            }else {
+                break;
             }
         }
-        return list;
+    }
+
+    protected void disableNode(Graph.Vertex vertex){
+        XGraph.XVertex xVertex = xGraph.getVertex(vertex);
+
+        for (Graph.Edge edge : xVertex) {
+            ((XGraph.XEdge)edge).disabled = true;
+        }
+        XGraph.getRevAdj = true;
+        for (Graph.Edge edge : xVertex) {
+            ((XGraph.XEdge)edge).disabled = true;
+        }
+        XGraph.getRevAdj = false;
+        xVertex.disabled = true;
     }
 
     protected void disableNodes(List<Graph.Vertex> vertices){
         for (Graph.Vertex vertex : vertices) {
-            XGraph.XVertex xVertex = xGraph.getVertex(vertex);
-
-            for (Graph.Edge edge : xVertex) {
-                ((XGraph.XEdge)edge).disabled = true;
-            }
-            XGraph.getRevAdj = true;
-            for (Graph.Edge edge : xVertex) {
-                ((XGraph.XEdge)edge).disabled = true;
-            }
-            XGraph.getRevAdj = false;
-            xVertex.disabled = true;
+            disableNode(vertex);
         }
     }
 
     protected void enableNodes(List<Graph.Vertex> vertices){
-        XGraph.getRevAdj = true;
         for (Graph.Vertex vertex : vertices) {
+            XGraph.getAllEdges = true;
             XGraph.XVertex xVertex = xGraph.getVertex(vertex);
-            xVertex.disabled = false;
+
             for (Graph.Edge edge : xVertex) {
                 ((XGraph.XEdge)edge).disabled = false;
             }
+            XGraph.getRevAdj = true;
+            for (Graph.Edge edge : xVertex) {
+                ((XGraph.XEdge)edge).disabled = false;
+            }
+            XGraph.getRevAdj = false;
+            xVertex.disabled = false;
+            XGraph.getAllEdges = false;
         }
-        XGraph.getRevAdj = false;
     }
 
     /*protected Graph.Vertex addIncomingOutgoingEdges(List<Graph.Vertex> vertices){
