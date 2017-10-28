@@ -56,7 +56,7 @@ public class TarjanMST {
         SCC scc = new SCC();
         XGraph.zeroGraph = true;
         scc.getAllScc(xGraph, start);
-        System.out.println(scc.totalScc);
+        //System.out.println(scc.totalScc);
         List<List<Graph.Vertex>> components = scc.list;
         XGraph.zeroGraph = false;
 
