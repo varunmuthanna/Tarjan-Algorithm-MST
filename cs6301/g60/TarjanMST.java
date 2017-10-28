@@ -31,19 +31,22 @@ public class TarjanMST {
             if(!vertex.equals(start)) {
                 vertex = xGraph.getVertex(vertex);
                 int min = -1;
-
+                Graph.Edge minEdge = null;
                 for (Graph.Edge edge : vertex) {
                     if (min == -1){
                         min = edge.weight;
+                        minEdge = edge;
                     } else if(edge.getWeight()>=0 && edge.getWeight() < min){
                         min = edge.weight;
+                        minEdge = edge;
                     }
                 }
-                if(min!=-1) {
+                if(min!=0) {
                     for (Graph.Edge edge : vertex) {
                         edge.setWeight(edge.getWeight() - min);
                     }
                 }
+                //System.out.println(vertex+"  "+min+" "+minEdge+" "+minEdge.getWeight());
             }
         }
         XGraph.getRevAdj = false;
@@ -54,25 +57,26 @@ public class TarjanMST {
         XGraph.zeroGraph = true;
         scc.getAllScc(xGraph, start);
         List<List<Graph.Vertex>> components = scc.list;
+        //System.out.println(components);
+        //System.out.println(scc.totalScc);
         XGraph.zeroGraph = false;
 
         for(List<Graph.Vertex> component : components){
-            //System.out.println(component);
             XGraph.XVertex newVertex = null;
             if(component.size()>1){
+                //System.out.println(component);
                 newVertex = new XGraph.XVertex(xGraph.addVertex());
                 xGraph.addVertex(newVertex);
 
                 for(Graph.Vertex vertex : component) {
-                    vertexToComponentRep.put((XGraph.XVertex) vertex, newVertex);
+                    vertexToComponentRep.put(vertex, newVertex);
                 }
+                vertexToComponentList.put(newVertex, component);
             }
-            vertexToComponentList.put(newVertex, component);
-
         }
 
         for(List<Graph.Vertex> component : components){
-            addIncomingOutgoingEdges(component);
+            addIncomingEdges(component);
         }
         for(List<Graph.Vertex> component : components){
             if(component.size()>1) {
@@ -83,18 +87,18 @@ public class TarjanMST {
         return start;
     }
 
-    protected void addIncomingOutgoingEdges(List<Graph.Vertex> vertices){
+    protected void addIncomingEdges(List<Graph.Vertex> vertices){
         //TODO: check if this map can be taken out
         // new component vertex to adj list mapping
         Map<Graph.Vertex, Graph.Edge> minEdgeForComponent = new HashMap<>();
 
+        XGraph.getRevAdj = true;
         for(Graph.Vertex v : vertices) {
-            XGraph.getRevAdj = true;
             for(Graph.Edge e : v){
                 Graph.Vertex u = e.otherEnd(v);
                 Graph.Vertex to = vertexToComponentRep.containsKey(v)?vertexToComponentRep.get(v):v;
                 Graph.Vertex from = vertexToComponentRep.containsKey(u)?vertexToComponentRep.get(u):u;
-                if((!vertexToComponentRep.containsKey(v) && !vertexToComponentRep.containsKey(u)) || from.equals(to)){
+                if( (!vertexToComponentRep.containsKey(v) && !vertexToComponentRep.containsKey(u)) || from.equals(to)){
                     continue;
                 }
 
@@ -106,13 +110,14 @@ public class TarjanMST {
                     minEdgeForComponent.put(from, e);
                 }
             }
-            XGraph.getRevAdj = false;
         }
+        XGraph.getRevAdj = false;
+
         //minEdgeForComponent contains edges that have a component with size >1 involved as one of the edge endpoints.
         for(Map.Entry<Graph.Vertex, Graph.Edge> it :minEdgeForComponent.entrySet()) {
             Graph.Edge e = it.getValue();
             // this check avoids adding redundant edges
-            Graph.Vertex from = vertexToComponentRep.containsKey(e.from)?vertexToComponentRep.get(e.from):e.from;
+            Graph.Vertex from = it.getKey() ;
             Graph.Vertex to = vertexToComponentRep.containsKey(e.to)?vertexToComponentRep.get(e.to):e.to;
             Graph.Edge newEdge = xGraph.addEdge(xGraph.getVertex(from), xGraph.getVertex(to), e.weight, xGraph.edgeSize());
             newEdgeToOldEdge.put(newEdge, e);
@@ -122,9 +127,9 @@ public class TarjanMST {
     protected void expandGraph(){
         Graph.Vertex[] arr = xGraph.getVertexArray();
 
-
         //TODO: write an iterator for this
         for(int i=xGraph.n-1;i>0;i--) {
+            Graph.Vertex v = arr[i];
             if (vertexToComponentList.containsKey(arr[i])) {
                 Graph.Vertex nodeToDisable = arr[i];
                 List<Graph.Vertex> nodesToEnable = vertexToComponentList.get(arr[i]);
@@ -148,6 +153,45 @@ public class TarjanMST {
                 break;
             }
         }
+    }
+
+    protected List<Graph.Edge> expandGraph(XGraph xgraph, List<Graph.Edge> dmst){
+
+        List<Graph.Edge> edgesToBeRemoved = new ArrayList<>();
+        List<Graph.Edge> edgesToBeAdded = new ArrayList<>();
+        for(Graph.Edge edge : dmst) {
+            if(vertexToComponentList.containsKey(edge.to) ) {
+
+                Graph.Edge parentEdge = newEdgeToOldEdge.get(edge);
+                //System.out.println("parent Edge: " + parentEdge + " of " + edge);
+                //System.out.println(vertexToComponentList.get(edge.to));
+                edgesToBeAdded.add(parentEdge);
+
+
+                edgesToBeRemoved.add(edge);
+
+                XGraph.zeroGraph = true;
+                DFS d = new DFS(xgraph, vertexToComponentList.get(edge.to));
+                d.dfs(xgraph.getVertex(parentEdge.to));
+                XGraph.zeroGraph = false;
+
+                disableNode(edge.to);
+                enableNodes(vertexToComponentList.get(edge.to));
+
+                edgesToBeAdded.addAll(d.dfsEdgeList);
+
+            }
+            if(vertexToComponentList.containsKey(edge.from)) {
+                Graph.Edge parentEdge = newEdgeToOldEdge.get(edge);
+                edgesToBeAdded.add(parentEdge);
+                edgesToBeRemoved.add(edge);
+            }
+        }
+
+        dmst.removeAll(edgesToBeRemoved);
+        dmst.addAll(edgesToBeAdded);
+
+        return dmst;
     }
 
     protected void disableNode(Graph.Vertex vertex){
@@ -186,90 +230,6 @@ public class TarjanMST {
             xVertex.disabled = false;
             XGraph.getAllEdges = false;
         }
-    }
-
-    /*protected Graph.Vertex addIncomingOutgoingEdges(List<Graph.Vertex> vertices){
-    	Graph.Vertex newVertex = xGraph.addVertex();
-    	HashMap<Graph.Vertex, Boolean> hash = new HashMap<>();
-    	for(Graph.Vertex u : vertices){
-    		hash.put(u, true);
-    	}
-    	
-    	for(Graph.Vertex u : vertices){
-    	    if(u==start){
-    	        start = newVertex;
-            }
-    		for(Graph.Edge e : u){
-    			Graph.Vertex v = e.otherEnd(u);
-    			if(hash.containsKey(v)){
-    				continue;
-    			}
-    			xGraph.addEdge(newVertex, v, e.weight, xGraph.edgeSize());
-    		}
-    		XGraph.getRevAdj = true;
-    		for(Graph.Edge e : u){
-    			Graph.Vertex v = e.otherEnd(u);
-    			if(hash.containsKey(v)){
-    				continue;
-    			}
-    			xGraph.addEdge(v, newVertex, e.weight, xGraph.edgeSize());
-    		}
-    		XGraph.getRevAdj = false;
-    	}
-    	return newVertex;
-    }*/
-
-    public static void main(String[] args) throws FileNotFoundException{
-    	Scanner in;
-        if (args.length > 0) {
-            File inputFile = new File(args[0]);
-            in = new Scanner(inputFile);
-        } else {
-            in = new Scanner(System.in);
-        }
-        System.out.println("reading input");
-	    int start = 1;
-        if(args.length > 1) {
-	        start = Integer.parseInt(args[1]);
-	    }
-
-        Graph g = Graph.readDirectedGraph(in);
-        Graph.Vertex startVertex = g.getVertex(start);
-        
-        XGraph xg = new XGraph(g);
-        TarjanMST tMST = new TarjanMST(xg,xg.getVertex(startVertex));
-        System.out.println("Original Graph");
-        SCC scc = new SCC();
-        scc.getAllScc(tMST.xGraph, xg.getVertex(startVertex));
-        int ind = 1;
-        for(List<Graph.Vertex> l : scc.list){
-        	System.out.println("component " + ind + " are");
-        	for(Graph.Vertex v: l){
-        		System.out.print(v.toString() + ",");
-        	}
-        	System.out.println();
-        	ind++;
-        }
-        System.out.println(tMST.xGraph);
-        
-        tMST.reduceEdgeWeights();
-        //tMST.xGraph.makeZeroGraph();
-        
-//        System.out.println("Zero Graph");
-//        scc = new SCC();
-//        scc.getAllScc(tMST.xGraph, xg.getVertex(startVertex));
-//        ind = 0;
-//        for(List<Graph.Vertex> l : scc.list){
-//        	System.out.println("component " + ind + " are");
-//        	for(Graph.Vertex v: l){
-//        		System.out.print(v.toString() + ",");
-//        	}
-//        	System.out.println();
-//        	ind++;
-//        }
-        tMST.shrinkGraph();
-        System.out.println("new graph");
-        System.out.println(tMST.xGraph);
     }
 
 }

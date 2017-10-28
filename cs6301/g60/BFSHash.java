@@ -116,6 +116,7 @@ public class BFSHash extends GraphHash<BFSVertex,Boolean> {
     boolean reachable(){
         for(Vertex u: g) {
             if(getDistance(u)==INFINITY){
+                //System.out.println(u);
                 return false;
             }
         }

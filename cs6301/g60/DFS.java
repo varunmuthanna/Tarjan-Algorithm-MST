@@ -5,10 +5,7 @@
  */
 
 package cs6301.g60;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 	
@@ -41,6 +38,24 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 		for(Graph.Vertex u: g) {
 			node[u.getName()] = new DFSVertex(u);
 		}
+	}
+
+	//
+	Map<Graph.Vertex, Boolean> listOfVertices;
+	Boolean getOnlyList = false;
+	DFS(Graph g, List<Graph.Vertex> vertices) {
+		super(g);
+		listOfVertices = new HashMap<>();
+		node = new DFSVertex[g.size()];
+		// Create array for storing vertex properties
+		for(Graph.Vertex u: g) {
+			node[u.getName()] = new DFSVertex(u);
+		}
+
+		for(Graph.Vertex v : vertices) {
+			listOfVertices.put(v, true);
+		}
+		getOnlyList =true;
 	}
 	
 	//Reinitialize the graph so that it could be used for dfs again
@@ -92,13 +107,15 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 	 */
 	void DFSVisit(Graph.Vertex u){
 		time = time + 1;
+		//System.out.println(u.name);
 		DFSVertex du = getVertex(u);
+		//System.out.println(du);
 		du.discover = time;
 		du.seen = true;
 		du.cno = cno;
 		for(Graph.Edge e: u) {
 			Graph.Vertex v = e.otherEnd(u);
-			if(!seen(v)){
+			if((!seen(v) && !getOnlyList) || (!seen(v) && getOnlyList && listOfVertices.containsKey(v))){
 				getVertex(v).parent = u;
 				dfsEdgeList.add(e);
 				DFSVisit(v);
