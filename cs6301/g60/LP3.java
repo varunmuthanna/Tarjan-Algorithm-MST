@@ -28,6 +28,14 @@ public class LP3 {
         int start = in.nextInt();  // start node of the MST
         Graph g = Graph.readDirectedGraph(in);
         Vertex startVertex = g.getVertex(start);
+    	BFSHash bfs = new BFSHash(g);
+        bfs.runAndPrint(startVertex);
+
+        if (!bfs.reachable()) {
+      	    System.out.println("All nodes are not reachable from the source");
+      	    return;
+        }
+
         List<Edge> dmst = new ArrayList<>();
 
         Timer timer = new Timer();
@@ -98,13 +106,13 @@ public class LP3 {
             XGraph.zeroGraph = false;
 
             if (bfs.reachable()) {
-                System.out.println("reached");
+                //System.out.println("reached");
                 XGraph.zeroGraph = true;
                 DFS d = new DFS(xgraph);
                 d.dfs(xgraph.getVertex(start));
                 dmstHelper = d.dfsEdgeList;
                 XGraph.zeroGraph = false;
-                System.out.println("expanding");
+                //System.out.println("expanding");
                 break;
             } else {
                 tarjanMST.shrinkGraph();
@@ -116,10 +124,15 @@ public class LP3 {
         /*System.out.println("after shrinking weights: " + i);
         System.out.print(xgraph);
         System.out.println("+++++++++++++++++++++++++++++++");*/
+        
+        Timer timer = new Timer();
         while (i>0) {
             tarjanMST.expandGraph(xgraph, dmstHelper);
             i--;
         }
+        timer.end();
+        //System.out.println("time for expand graph");
+        System.out.println(timer);
         //System.out.println(dmstHelper);
         //System.out.println(xgraph);
 
