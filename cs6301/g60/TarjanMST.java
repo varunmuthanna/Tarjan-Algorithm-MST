@@ -56,23 +56,23 @@ public class TarjanMST {
         SCC scc = new SCC();
         XGraph.zeroGraph = true;
         scc.getAllScc(xGraph, start);
+        System.out.println(scc.totalScc);
         List<List<Graph.Vertex>> components = scc.list;
-        //System.out.println(components);
-        //System.out.println(scc.totalScc);
         XGraph.zeroGraph = false;
 
+
         for(List<Graph.Vertex> component : components){
+            //System.out.println(component);
             XGraph.XVertex newVertex = null;
             if(component.size()>1){
-                //System.out.println(component);
                 newVertex = new XGraph.XVertex(xGraph.addVertex());
                 xGraph.addVertex(newVertex);
 
                 for(Graph.Vertex vertex : component) {
-                    vertexToComponentRep.put(vertex, newVertex);
+                    vertexToComponentRep.put((XGraph.XVertex) vertex, newVertex);
                 }
-                vertexToComponentList.put(newVertex, component);
             }
+            vertexToComponentList.put(newVertex, component);
         }
 
         for(List<Graph.Vertex> component : components){
@@ -83,7 +83,6 @@ public class TarjanMST {
                 disableNodes(component);
             }
         }
-
         return start;
     }
 
@@ -159,31 +158,39 @@ public class TarjanMST {
 
         List<Graph.Edge> edgesToBeRemoved = new ArrayList<>();
         List<Graph.Edge> edgesToBeAdded = new ArrayList<>();
+
+        //System.out.println("dmst : " + dmst);
+
         for(Graph.Edge edge : dmst) {
-            if(vertexToComponentList.containsKey(edge.to)) {
+            //System.out.println("orginal edge : " + edge + " parentEdge " + newEdgeToOldEdge.get(edge));
+            //System.out.println(vertexToComponentList.get(edge.to));
 
-                Graph.Edge parentEdge = newEdgeToOldEdge.get(edge);
-                System.out.println("parent Edge: " + parentEdge + " of " + edge);
-                System.out.println(vertexToComponentList.get(edge.to));
-                edgesToBeAdded.add(parentEdge);
-                edgesToBeRemoved.add(edge);
-
-                disableNode(edge.to);
-                enableNodes(vertexToComponentList.get(edge.to));
-
-                XGraph.zeroGraph = true;
-                DFS d = new DFS(xgraph, vertexToComponentList.get(edge.to));
-                d.dfs(xgraph.getVertex(parentEdge.to));
-                XGraph.zeroGraph = false;
-
-
-                edgesToBeAdded.addAll(d.dfsEdgeList);
-
-            }
-            if(vertexToComponentList.containsKey(edge.from)) {
+            if(newEdgeToOldEdge.containsKey(edge) && edge.to.equals(newEdgeToOldEdge.get(edge).to) && !edge.from.equals(newEdgeToOldEdge.get(edge).from)) {
                 Graph.Edge parentEdge = newEdgeToOldEdge.get(edge);
                 edgesToBeAdded.add(parentEdge);
                 edgesToBeRemoved.add(edge);
+            } else {
+                if (vertexToComponentList.containsKey(edge.to)) {
+
+                    Graph.Edge parentEdge = newEdgeToOldEdge.get(edge);
+                    edgesToBeAdded.add(parentEdge);
+                    edgesToBeRemoved.add(edge);
+
+                    disableNode(edge.to);
+                    enableNodes(vertexToComponentList.get(edge.to));
+
+                    XGraph.zeroGraph = true;
+                    DFS d = new DFS(xgraph, vertexToComponentList.get(edge.to));
+                    d.dfs(xgraph.getVertex(parentEdge.to));
+                    XGraph.zeroGraph = false;
+
+                    edgesToBeAdded.addAll(d.dfsEdgeList);
+
+                } else if (vertexToComponentList.containsKey(edge.from)) {
+                    Graph.Edge parentEdge = newEdgeToOldEdge.get(edge);
+                    edgesToBeAdded.add(parentEdge);
+                    edgesToBeRemoved.add(edge);
+                }
             }
         }
 

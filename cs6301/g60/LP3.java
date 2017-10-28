@@ -80,39 +80,47 @@ public class LP3 {
 
     private static void directedMSTHelper(Vertex start){
         //System.out.println(start.name);
+        long i = 0l;
 
-        //if(i>10) break;
+        while(true) {
+            //if(i>10) break;
         /*System.out.println("before reducing weights: " + i);
         System.out.print(xgraph);
         System.out.println("+++++++++++++++++++++++++++++++");*/
-        tarjanMST.reduceEdgeWeights();
-        /*System.out.println("after reducing weights: " + i);
-        System.out.print(xgraph);
+            tarjanMST.reduceEdgeWeights();
+        /*System.out.println("after reducing weights: ");
+        System.out.print(xgraph.size());
         System.out.println("+++++++++++++++++++++++++++++++");*/
 
-        XGraph.zeroGraph = true;
-        BFSHash bfs = new BFSHash(xgraph);
-        bfs.runAndPrint(xgraph.getVertex(start));
-        XGraph.zeroGraph = false;
-
-        if(bfs.reachable()){
             XGraph.zeroGraph = true;
-            DFS d = new DFS(xgraph);
-            d.dfs(xgraph.getVertex(start));
-            dmstHelper = d.dfsEdgeList;
+            BFSHash bfs = new BFSHash(xgraph);
+            bfs.runAndPrint(xgraph.getVertex(start));
             XGraph.zeroGraph = false;
-            return;
-        }else {
-            tarjanMST.shrinkGraph();
+
+            if (bfs.reachable()) {
+                System.out.println("reached");
+                XGraph.zeroGraph = true;
+                DFS d = new DFS(xgraph);
+                d.dfs(xgraph.getVertex(start));
+                dmstHelper = d.dfsEdgeList;
+                XGraph.zeroGraph = false;
+                System.out.println("expanding");
+                break;
+            } else {
+                tarjanMST.shrinkGraph();
+            }
+            i++;
         }
-        directedMSTHelper(start);
+        //directedMSTHelper(start);
 
         /*System.out.println("after shrinking weights: " + i);
         System.out.print(xgraph);
         System.out.println("+++++++++++++++++++++++++++++++");*/
-
-        tarjanMST.expandGraph(xgraph, dmstHelper);
-        System.out.println(dmstHelper);
+        while (i>0) {
+            tarjanMST.expandGraph(xgraph, dmstHelper);
+            i--;
+        }
+        //System.out.println(dmstHelper);
         //System.out.println(xgraph);
 
         //System.out.println();
@@ -120,3 +128,5 @@ public class LP3 {
         //System.out.println("Output = " + mstWeight);
     }
 }
+
+///Users/shivan/Downloads/lp2-test/lp2-t4.txt
