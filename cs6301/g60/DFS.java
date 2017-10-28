@@ -5,18 +5,17 @@
  */
 
 package cs6301.g60;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
-	
+
 	int time = 0;
 	List<Graph.Vertex> decFinList;
 	List<Graph.Edge> dfsEdgeList;
 	int cno = 0;
-	
+	Map<Graph.Vertex, Boolean> listOfVertices;
+	Boolean getOnlyList = false;
+
 	//Class to store information about DFS on vertex
 	static class DFSVertex {
 		boolean seen;
@@ -32,7 +31,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 			cno = -1;
 		}
 	}
-	
+
 	//Initializing array of type DFSVertex
 	DFS(Graph g) {
 		super(g);
@@ -42,7 +41,23 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 			node[u.getName()] = new DFSVertex(u);
 		}
 	}
-	
+
+	//
+	DFS(Graph g, List<Graph.Vertex> vertices) {
+		super(g);
+		listOfVertices = new HashMap<>();
+		node = new DFSVertex[g.size()];
+		// Create array for storing vertex properties
+		for(Graph.Vertex u: g) {
+			node[u.getName()] = new DFSVertex(u);
+		}
+
+		for(Graph.Vertex v : vertices) {
+			listOfVertices.put(v, true);
+		}
+		getOnlyList =true;
+	}
+
 	//Reinitialize the graph so that it could be used for dfs again
 	void reinitialize(){
 		cno = 0;
@@ -55,10 +70,10 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 			du.cno = -1;
 		}
 	}
-	
+
 	/**
 	 * DFS on given directed graph
-	 */	
+	 */
 	public void dfs(Iterator<Graph.Vertex> it){
 		decFinList = new LinkedList<>();
 		while(it.hasNext()){
@@ -67,9 +82,9 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 				cno++;
 				DFSVisit(u);
 			}
-		}	
+		}
 	}
-	
+
 	public void dfs(Graph.Vertex u){
 		decFinList = new LinkedList<>();
 		dfsEdgeList = new ArrayList<>();
@@ -84,21 +99,23 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 			}
 		}
 	}
-	
+
 	/*
-	 * This will visit all the nodes in the single component and 
+	 * This will visit all the nodes in the single component and
 	 * names its component with corresponding component number, also
 	 * it marks the nodes visited as seen
 	 */
 	void DFSVisit(Graph.Vertex u){
 		time = time + 1;
+		//System.out.println(u.name);
 		DFSVertex du = getVertex(u);
+		//System.out.println(du);
 		du.discover = time;
 		du.seen = true;
 		du.cno = cno;
 		for(Graph.Edge e: u) {
 			Graph.Vertex v = e.otherEnd(u);
-			if(!seen(v)){
+			if((!seen(v) && !getOnlyList) || (!seen(v) && getOnlyList && listOfVertices.containsKey(v))){
 				getVertex(v).parent = u;
 				dfsEdgeList.add(e);
 				DFSVisit(v);
@@ -108,7 +125,7 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 		visitAtFinish(u, time);
 		decFinList.add(0, u);
 	}
-	
+
 	/*
 	 * Check if the all the nodes belong to same component,
 	 * else it returns false
@@ -125,35 +142,35 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 		}
 		return true;
 	}
-	
+
 	/*
 	 * Get all the nodes in the decreasing finish time
 	 */
 	public List<Graph.Vertex> getDecFinishList(){
 		return this.decFinList;
 	}
-	
+
 	/*
 	 * Transpose of graph is done by making all the adjacency list
-	 * to the reverse adjacency list and vice versa 
+	 * to the reverse adjacency list and vice versa
 	 */
 	public void transposeGraph(){
 		g.reverseGraph();
 	}
-	
+
 	//Changing vertex attribute values after DFS on a vertex
 	public void visitAtFinish(Graph.Vertex u, int time) {
 		DFSVertex dv = getVertex(u);
 		dv.finish = time;
 	}
-	
+
 	//Check if the node is visited or not
 	public boolean seen(Graph.Vertex u) {
 		return getVertex(u).seen;
 	}
-	
+
 	public DFS.DFSVertex getDFSVertex(Graph.Vertex u){
 		return getVertex(u);
 	}
-	
+
 }

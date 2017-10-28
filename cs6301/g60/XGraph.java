@@ -248,14 +248,14 @@ public class XGraph extends Graph {
 
     public String toString() {
         StringBuilder result = new StringBuilder();
-        //XGraph.getRevAdj = false;
+        XGraph.getRevAdj = true;
         for (Graph.Vertex vertex : this){
             for(Graph.Edge edge : vertex ){
-                result.append(edge.toString()+" "+edge.weight+" ");
+                result.append(edge.toString()+"-"+edge.weight+", ");
             }
             result.append("\n");
         }
-        //XGraph.getRevAdj = false;
+        XGraph.getRevAdj = false;
         return result.toString();
     }
 

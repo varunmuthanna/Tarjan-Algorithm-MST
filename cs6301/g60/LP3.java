@@ -57,6 +57,7 @@ public class LP3 {
      */
     static TarjanMST tarjanMST;
     static XGraph xgraph;
+    static List<Edge> dmstHelper;
 
     public static int directedMST(Graph g, Vertex start, List<Edge> dmst) {
         /**
@@ -66,60 +67,66 @@ public class LP3 {
 
         xgraph = new XGraph(g);
         tarjanMST = new TarjanMST(xgraph, xgraph.getVertex(start));
-        List<Edge> path = directedMSTHelper(start, dmst);
-        return path.size();
+        dmstHelper = dmst;
+        directedMSTHelper(start);
+
+        int weight = 0;
+        for(Edge edge : dmstHelper) {
+            weight += ((XGraph.XEdge)edge).original_weight;
+        }
+        System.out.println("Final weight: "+weight);
+        return dmstHelper.size();
     }
 
-    private static List<Edge> directedMSTHelper(Vertex start, List<Edge> dmst){
-        /*tarjanMST.reduceEdgeWeights();
-        System.out.println("Started reducing weights");
+    private static void directedMSTHelper(Vertex start){
+        //System.out.println(start.name);
+        long i = 0l;
+
+        while(true) {
+            //if(i>10) break;
+        /*System.out.println("before reducing weights: " + i);
         System.out.print(xgraph);
-        System.out.println("Weights reduction complete");
-        XGraph.zeroGraph = true;
-        BFSHash bh1 = new BFSHash(xgraph);
-        bh1.runAndPrint(xgraph.getVertex(start));
-
-        if(bh1.reachable()){
-            return dmst;
-        }else {
-            start = tarjanMST.shrinkGraph();
-        }
-        System.out.println("after shrinking:  \n" + xgraph);
-        directedMSTHelper(start, dmst);
-        tarjanMST.expandGraph();
-        System.out.println("___________");
-
-        return null;*/
-        while (true) {
-            //System.out.println("after reducing weights");
+        System.out.println("+++++++++++++++++++++++++++++++");*/
             tarjanMST.reduceEdgeWeights();
-            //System.out.print(xgraph);
-            //System.out.println();
+        /*System.out.println("after reducing weights: ");
+        System.out.print(xgraph.size());
+        System.out.println("+++++++++++++++++++++++++++++++");*/
+
             XGraph.zeroGraph = true;
             BFSHash bfs = new BFSHash(xgraph);
             bfs.runAndPrint(xgraph.getVertex(start));
             XGraph.zeroGraph = false;
-            if(bfs.reachable()){
-                //dmst = find path using dfs
-                break;
-            }else {
-                start = tarjanMST.shrinkGraph();
-            }
-            //System.out.println("after shrinking:  \n" + xgraph);
-        }
 
-        tarjanMST.expandGraph();
-        XGraph.zeroGraph = true;
-        DFS d = new DFS(xgraph);
-        d.dfs(xgraph.getVertex(start));
-        int mstWeight = 0;
-        for(Graph.Edge e : d.dfsEdgeList){
-        	System.out.print(e + ",");
-        	mstWeight += ((XGraph.XEdge)e).original_weight;
+            if (bfs.reachable()) {
+                System.out.println("reached");
+                XGraph.zeroGraph = true;
+                DFS d = new DFS(xgraph);
+                d.dfs(xgraph.getVertex(start));
+                dmstHelper = d.dfsEdgeList;
+                XGraph.zeroGraph = false;
+                System.out.println("expanding");
+                break;
+            } else {
+                tarjanMST.shrinkGraph();
+            }
+            i++;
         }
-        System.out.println();
+        //directedMSTHelper(start);
+
+        /*System.out.println("after shrinking weights: " + i);
+        System.out.print(xgraph);
+        System.out.println("+++++++++++++++++++++++++++++++");*/
+        while (i>0) {
+            tarjanMST.expandGraph(xgraph, dmstHelper);
+            i--;
+        }
+        //System.out.println(dmstHelper);
+        //System.out.println(xgraph);
+
+        //System.out.println();
         //System.out.println("Final graph: "+xgraph);
-        System.out.println("Output = " + mstWeight);
-        return dmst;
+        //System.out.println("Output = " + mstWeight);
     }
 }
+
+///Users/shivan/Downloads/lp2-test/lp2-t4.txt
