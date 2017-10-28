@@ -28,6 +28,14 @@ public class LP3 {
         int start = in.nextInt();  // start node of the MST
         Graph g = Graph.readDirectedGraph(in);
         Vertex startVertex = g.getVertex(start);
+    	BFSHash bfs = new BFSHash(g);
+        bfs.runAndPrint(startVertex);
+
+        if (!bfs.reachable()) {
+      	    System.out.println("All nodes are not reachable from the source");
+      	    return;
+        }
+
         List<Edge> dmst = new ArrayList<>();
 
         Timer timer = new Timer();
