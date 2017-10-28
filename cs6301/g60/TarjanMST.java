@@ -30,23 +30,18 @@ public class TarjanMST {
         for(Graph.Vertex vertex: xGraph){
             if(!vertex.equals(start)) {
                 vertex = xGraph.getVertex(vertex);
-                int min = -1;
-                Graph.Edge minEdge = null;
+                int min = vertex.revAdj.get(0).getWeight();
                 for (Graph.Edge edge : vertex) {
-                    if (min == -1){
+                    if(edge.getWeight()>=0 && edge.getWeight() < min){
                         min = edge.weight;
-                        minEdge = edge;
-                    } else if(edge.getWeight()>=0 && edge.getWeight() < min){
-                        min = edge.weight;
-                        minEdge = edge;
                     }
+                    if(min==0) break;
                 }
                 if(min!=0) {
                     for (Graph.Edge edge : vertex) {
                         edge.setWeight(edge.getWeight() - min);
                     }
                 }
-                //System.out.println(vertex+"  "+min+" "+minEdge+" "+minEdge.getWeight());
             }
         }
         XGraph.getRevAdj = false;
