@@ -160,23 +160,22 @@ public class TarjanMST {
         List<Graph.Edge> edgesToBeRemoved = new ArrayList<>();
         List<Graph.Edge> edgesToBeAdded = new ArrayList<>();
         for(Graph.Edge edge : dmst) {
-            if(vertexToComponentList.containsKey(edge.to) ) {
+            if(vertexToComponentList.containsKey(edge.to)) {
 
                 Graph.Edge parentEdge = newEdgeToOldEdge.get(edge);
-                //System.out.println("parent Edge: " + parentEdge + " of " + edge);
-                //System.out.println(vertexToComponentList.get(edge.to));
+                System.out.println("parent Edge: " + parentEdge + " of " + edge);
+                System.out.println(vertexToComponentList.get(edge.to));
                 edgesToBeAdded.add(parentEdge);
-
-
                 edgesToBeRemoved.add(edge);
+
+                disableNode(edge.to);
+                enableNodes(vertexToComponentList.get(edge.to));
 
                 XGraph.zeroGraph = true;
                 DFS d = new DFS(xgraph, vertexToComponentList.get(edge.to));
                 d.dfs(xgraph.getVertex(parentEdge.to));
                 XGraph.zeroGraph = false;
 
-                disableNode(edge.to);
-                enableNodes(vertexToComponentList.get(edge.to));
 
                 edgesToBeAdded.addAll(d.dfsEdgeList);
 
