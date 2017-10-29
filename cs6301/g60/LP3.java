@@ -102,9 +102,9 @@ public class LP3 {
             if (bfs.reachable()) {
                 //System.out.println("reached");
                 XGraph.zeroGraph = true;
-                DFS d = new DFS(xgraph);
-                d.dfs(xgraph.getVertex(start));
-                dmstHelper = d.dfsEdgeList;
+                /*DFS d = new DFS(xgraph);
+                d.dfs(xgraph.getVertex(start));*/
+                dmstHelper = bfs.edgeList;
                 XGraph.zeroGraph = false;
                 //System.out.println("expanding");
                 break;
