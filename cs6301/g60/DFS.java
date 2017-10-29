@@ -48,11 +48,6 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 		for(Graph.Vertex u: vertices) {
 			node[u.getName()] = new DFSVertex(u);
 		}
-
-//		for(Graph.Vertex v : vertices) {
-//			listOfVertices.put(v, true);
-//		}
-//		getOnlyList =true;
 	}
 
 	//Reinitialize the graph so that it could be used for dfs again

@@ -70,29 +70,40 @@ public class LP3 {
     public static int directedMST(Graph g, Vertex start, List<Edge> dmst) {
         xgraph = new XGraph(g);
         tarjanMST = new TarjanMST(xgraph, xgraph.getVertex(start));
-        dmstHelper = dmst;
+        dmstHelper = new ArrayList<>();
         directedMSTHelper(start);
 
         int weight = 0;
+
+        Map<Vertex, List<Edge>> map = new HashMap<>();
+
         for(Edge edge : dmstHelper) {
+            if(map.containsKey(edge.to)) {
+                List<Edge> list = map.get(edge.to);
+                list.add(edge);
+            }else{
+                List<Edge> list = new ArrayList<>();
+                list.add(edge);
+                map.put(edge.to, list);
+            }
             weight += ((XGraph.XEdge)edge).original_weight;
         }
+
+        for(Vertex vertex : xgraph.vertex) {
+            if(map.containsKey(vertex)) {
+                dmst.addAll(map.get(vertex));
+            }else{
+                dmst.add(null);
+            }
+        }
+
         System.out.println("Final weight: "+weight);
         return dmstHelper.size();
     }
 
     private static void directedMSTHelper(Vertex start){
-        long i = 0l;
-
         while(true) {
-            //if(i>10) break;
-            /*System.out.println("before reducing weights: " + i);
-            System.out.print(xgraph);
-            System.out.println("+++++++++++++++++++++++++++++++");*/
             tarjanMST.reduceEdgeWeights();
-            /*System.out.println("after reducing weights: ");
-            System.out.print(xgraph.size());
-            System.out.println("+++++++++++++++++++++++++++++++");*/
 
             XGraph.zeroGraph = true;
             BFSHash bfs = new BFSHash(xgraph);
@@ -100,35 +111,20 @@ public class LP3 {
             XGraph.zeroGraph = false;
 
             if (bfs.reachable()) {
-                //System.out.println("reached");
                 XGraph.zeroGraph = true;
-                /*DFS d = new DFS(xgraph);
-                d.dfs(xgraph.getVertex(start));*/
-                dmstHelper = bfs.edgeList;
+                DFS d = new DFS(xgraph);
+                d.dfs(xgraph.getVertex(start));
+                dmstHelper = d.dfsEdgeList;
                 XGraph.zeroGraph = false;
-                //System.out.println("expanding");
                 break;
             } else {
                 tarjanMST.shrinkGraph();
             }
-            i++;
         }
-        //directedMSTHelper(start);
-
-        /*System.out.println("after shrinking weights: " + i);
-        System.out.print(xgraph);
-        System.out.println("+++++++++++++++++++++++++++++++");*/
         
         while (dmstHelper.size()!=xgraph.vertex.length-1) {
             tarjanMST.expandGraph(xgraph, dmstHelper);
-            i--;
         }
-        //System.out.println(dmstHelper);
-        //System.out.println(xgraph);
-
-        //System.out.println();
-        //System.out.println("Final graph: "+xgraph);
-        //System.out.println("Output = " + mstWeight);
     }
 }
 
