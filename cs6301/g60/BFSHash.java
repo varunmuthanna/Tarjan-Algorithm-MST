@@ -108,9 +108,6 @@ public class BFSHash extends GraphHash<BFSVertex,Boolean> {
 
     void runAndPrint(Vertex src) {
         bfs(src);
-        /*for(Vertex u: g) {
-            System.out.println(u + " : " + getDistance(u));
-        }*/
     }
 
     boolean reachable(){
