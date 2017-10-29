@@ -16,7 +16,6 @@ import java.util.*;
 
 public class BFSHash extends GraphHash<BFSVertex,Boolean> {
     public static final int INFINITY = Integer.MAX_VALUE;
-    List<Edge> edgeList;
     // Class to store information about a vertex in this algorithm
     static class BFSVertex {
         boolean seen;
@@ -53,7 +52,6 @@ public class BFSHash extends GraphHash<BFSVertex,Boolean> {
 
     public BFSHash(Graph g) {
         super(g);
-        edgeList = new ArrayList<>();
         for(Graph.Vertex u: g) {
             putVertex(u, new BFSVertex(u));
         }
@@ -79,7 +77,6 @@ public class BFSHash extends GraphHash<BFSVertex,Boolean> {
                 Vertex v = e.otherEnd(u);
                 if(!seen(v)) {
                     visit(u,v);
-                    edgeList.add(e);
                     q.add(v);
                 }
             }
