@@ -13,8 +13,6 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 	List<Graph.Vertex> decFinList;
 	List<Graph.Edge> dfsEdgeList;
 	int cno = 0;
-	Map<Graph.Vertex, Boolean> listOfVertices;
-	Boolean getOnlyList = false;
 
 	//Class to store information about DFS on vertex
 	static class DFSVertex {
@@ -45,7 +43,6 @@ public class DFS extends GraphAlgorithm<DFS.DFSVertex> {
 	//
 	DFS(Graph g, List<Graph.Vertex> vertices) {
 		super(g);
-		listOfVertices = new HashMap<>();
 		node = new DFSVertex[g.size()];
 		// Create array for storing vertex properties
 		for(Graph.Vertex u: vertices) {

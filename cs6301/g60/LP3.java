@@ -68,11 +68,6 @@ public class LP3 {
     static List<Edge> dmstHelper;
 
     public static int directedMST(Graph g, Vertex start, List<Edge> dmst) {
-        /**
-         * TODO: check if the all the nodes are reachable from the start node using BFS on object of Graph g
-         */
-
-
         xgraph = new XGraph(g);
         tarjanMST = new TarjanMST(xgraph, xgraph.getVertex(start));
         dmstHelper = dmst;
@@ -87,18 +82,17 @@ public class LP3 {
     }
 
     private static void directedMSTHelper(Vertex start){
-        //System.out.println(start.name);
         long i = 0l;
 
         while(true) {
             //if(i>10) break;
-        /*System.out.println("before reducing weights: " + i);
-        System.out.print(xgraph);
-        System.out.println("+++++++++++++++++++++++++++++++");*/
+            /*System.out.println("before reducing weights: " + i);
+            System.out.print(xgraph);
+            System.out.println("+++++++++++++++++++++++++++++++");*/
             tarjanMST.reduceEdgeWeights();
-        /*System.out.println("after reducing weights: ");
-        System.out.print(xgraph.size());
-        System.out.println("+++++++++++++++++++++++++++++++");*/
+            /*System.out.println("after reducing weights: ");
+            System.out.print(xgraph.size());
+            System.out.println("+++++++++++++++++++++++++++++++");*/
 
             XGraph.zeroGraph = true;
             BFSHash bfs = new BFSHash(xgraph);
@@ -108,9 +102,9 @@ public class LP3 {
             if (bfs.reachable()) {
                 //System.out.println("reached");
                 XGraph.zeroGraph = true;
-                DFS d = new DFS(xgraph);
-                d.dfs(xgraph.getVertex(start));
-                dmstHelper = d.dfsEdgeList;
+                /*DFS d = new DFS(xgraph);
+                d.dfs(xgraph.getVertex(start));*/
+                dmstHelper = bfs.edgeList;
                 XGraph.zeroGraph = false;
                 //System.out.println("expanding");
                 break;
@@ -125,14 +119,10 @@ public class LP3 {
         System.out.print(xgraph);
         System.out.println("+++++++++++++++++++++++++++++++");*/
         
-        Timer timer = new Timer();
-        while (i>0) {
+        while (dmstHelper.size()!=xgraph.vertex.length-1) {
             tarjanMST.expandGraph(xgraph, dmstHelper);
             i--;
         }
-        timer.end();
-        //System.out.println("time for expand graph");
-        System.out.println(timer);
         //System.out.println(dmstHelper);
         //System.out.println(xgraph);
 
